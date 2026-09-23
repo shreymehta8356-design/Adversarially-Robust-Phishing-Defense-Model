@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Running PhishGuard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --ground:      #f5f7f9;
+    --surface:     #ffffff;
+    --surface-2:   #eaeef2;
+    --hairline:    #d6dde4;
+    --ink:         #111820;
+    --ink-2:       #4a5763;
+    --ink-3:       #74828f;
+    --accent:      #0d6f7d;
+    --accent-ink:  #ffffff;
+    --accent-soft: #dff0f2;
+    --warn:        #8a5a12;
+    --warn-soft:   #fbf0dc;
+    --warn-line:   #e0c48a;
+    --term-bg:     #141b23;
+    --term-ink:    #d3dce5;
+    --term-dim:    #7d8b99;
+    --term-green:  #6dc08a;
+    --term-cyan:   #5fbecb;
+    --term-amber:  #d9a441;
+
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+
+    --rail: 3.25rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0d131a;
+      --surface:     #151d26;
+      --surface-2:   #1d2731;
+      --hairline:    #2b3742;
+      --ink:         #e7edf3;
+      --ink-2:       #b0bcc8;
+      --ink-3:       #8797a5;
+      --accent:      #46b3c1;
+      --accent-ink:  #06222a;
+      --accent-soft: #12303a;
+      --warn:        #dfae5e;
+      --warn-soft:   #2b2314;
+      --warn-line:   #5c4a26;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:      #0d131a;
+    --surface:     #151d26;
+    --surface-2:   #1d2731;
+    --hairline:    #2b3742;
+    --ink:         #e7edf3;
+    --ink-2:       #b0bcc8;
+    --ink-3:       #8797a5;
+    --accent:      #46b3c1;
+    --accent-ink:  #06222a;
+    --accent-soft: #12303a;
+    --warn:        #dfae5e;
+    --warn-soft:   #2b2314;
+    --warn-line:   #5c4a26;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 400 17px/1.62 var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem 5rem; }
+
+  /* ---------------------------------------------------------- masthead */
+  header.top { padding: 3rem 0 1.5rem; }
+  .kicker {
+    font: 600 0.72rem/1 var(--mono);
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: .9rem;
+  }
+  h1 {
+    font: 700 clamp(2rem, 6vw, 2.9rem)/1.08 var(--display);
+    letter-spacing: -.022em; margin: 0 0 .7rem; text-wrap: balance;
+  }
+  .standfirst {
+    font-size: 1.13rem; color: var(--ink-2); margin: 0; max-width: 34rem;
+  }
+
+  /* ------------------------------------------------------------ picker */
+  .picker {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--ground);
+    border-bottom: 1px solid var(--hairline);
+    padding: .85rem 0 .8rem; margin-bottom: 2.5rem;
+    display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap;
+  }
+  .picker .lbl {
+    font: 600 .72rem/1 var(--mono); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .segmented { display: flex; gap: .3rem; }
+  .segmented button {
+    font: 600 .92rem/1 var(--body);
+    padding: .46rem .95rem; border-radius: 999px; cursor: pointer;
+    background: transparent; color: var(--ink-2);
+    border: 1px solid var(--hairline);
+    transition: background .14s, color .14s, border-color .14s;
+  }
+  .segmented button:hover { border-color: var(--accent); color: var(--ink); }
+  .segmented button[aria-pressed="true"] {
+    background: var(--accent); border-color: var(--accent); color: var(--accent-ink);
+  }
+  .segmented button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ------------------------------------------------------------- steps */
+  .step {
+    position: relative;
+    padding-left: var(--rail);
+    padding-bottom: 2.75rem;
+  }
+  /* the connecting rail: this really is a sequence, so it earns the line */
+  .step::before {
+    content: ""; position: absolute; left: 1.06rem; top: 2.4rem; bottom: 0;
+    width: 1px; background: var(--hairline);
+  }
+  .step:last-of-type::before { display: none; }
+  .step > .num {
+    position: absolute; left: 0; top: .1rem;
+    width: 2.15rem; height: 2.15rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font: 600 .95rem/1 var(--mono);
+    background: var(--surface); color: var(--accent);
+    border: 1.5px solid var(--accent);
+  }
+  .step h2 {
+    font: 600 1.32rem/1.28 var(--display);
+    margin: .15rem 0 .55rem; letter-spacing: -.01em; text-wrap: balance;
+  }
+  .step p { margin: 0 0 .9rem; }
+  .step p:last-child { margin-bottom: 0; }
+  .lede { color: var(--ink-2); }
+
+  /* -------------------------------------------------------- terminal */
+  figure.term {
+    margin: 1.1rem 0; border-radius: 9px; overflow: hidden;
+    background: var(--term-bg); border: 1px solid #000;
+    box-shadow: 0 1px 2px rgba(0,0,0,.16), 0 8px 22px rgba(8,15,22,.14);
+  }
+  .term-bar {
+    display: flex; align-items: center; gap: .42rem;
+    padding: .5rem .75rem; background: rgba(255,255,255,.045);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+  }
+  .term-bar i { width: 9px; height: 9px; border-radius: 50%; background: #3d4854; }
+  .term-bar span {
+    margin-left: .5rem; font: 400 .72rem/1 var(--mono); color: var(--term-dim);
+  }
+  .term-body {
+    margin: 0; padding: .9rem 1rem 1rem;
+    font: 400 .855rem/1.65 var(--mono); color: var(--term-ink);
+    overflow-x: auto; white-space: pre;
+  }
+  .term-body .you { color: #fff; font-weight: 600; }
+  .term-body .prompt { color: var(--term-cyan); }
+  .term-body .dim { color: var(--term-dim); }
+  .term-body .ok { color: var(--term-green); }
+  .term-body .warnc { color: var(--term-amber); }
+
+  /* what you type — the one thing they must copy exactly */
+  .type-this {
+    display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+    background: var(--accent-soft); border: 1px solid var(--accent);
+    border-radius: 9px; padding: .8rem .9rem; margin: 1.1rem 0;
+  }
+  .type-this .tag {
+    font: 600 .68rem/1 var(--mono); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--accent); flex: none;
+  }
+  .type-this code {
+    font: 600 1.02rem/1.4 var(--mono); color: var(--ink);
+    word-break: break-all; flex: 1 1 12rem;
+  }
+  .copy {
+    font: 600 .78rem/1 var(--body); cursor: pointer; flex: none;
+    background: var(--accent); color: var(--accent-ink); border: none;
+    border-radius: 6px; padding: .45rem .7rem;
+  }
+  .copy:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* what you should see */
+  .expect {
+    border-left: 3px solid var(--accent);
+    background: var(--surface); border-radius: 0 8px 8px 0;
+    padding: .8rem 1rem; margin: 1.1rem 0;
+  }
+  .expect .h {
+    font: 600 .7rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); display: block; margin-bottom: .45rem;
+  }
+  .expect p { margin: 0; font-size: .96rem; color: var(--ink-2); }
+
+  /* troubleshooting, attached to the step it belongs to */
+  details.snag {
+    border: 1px solid var(--warn-line); background: var(--warn-soft);
+    border-radius: 8px; padding: .6rem .85rem; margin: 1rem 0 0;
+  }
+  details.snag summary {
+    cursor: pointer; font: 600 .93rem/1.4 var(--body); color: var(--warn);
+    list-style: none;
+  }
+  details.snag summary::-webkit-details-marker { display: none; }
+  details.snag summary::before { content: "▸ "; font-size: .8em; }
+  details.snag[open] summary::before { content: "▾ "; }
+  details.snag .inner { padding-top: .7rem; font-size: .95rem; color: var(--ink-2); }
+  details.snag .inner p { margin: 0 0 .6rem; }
+  details.snag .inner p:last-child { margin-bottom: 0; }
+  details.snag code, .inline-code {
+    font: 400 .88em var(--mono); background: var(--surface-2);
+    padding: .1em .35em; border-radius: 4px; color: var(--ink);
+  }
+
+  /* small inline vocabulary note */
+  .vocab {
+    font-size: .93rem; color: var(--ink-3); border-left: 2px solid var(--hairline);
+    padding-left: .8rem; margin: .9rem 0;
+  }
+  .vocab b { color: var(--ink-2); font-weight: 600; }
+
+  .os-only { display: none; }
+  .os-only.active { display: block; }
+
+  ol.plain { margin: .5rem 0 0; padding-left: 1.15rem; }
+  ol.plain li { margin-bottom: .55rem; }
+  ol.plain li:last-child { margin-bottom: 0; }
+
+  /* --------------------------------------------------------- finish */
+  .finish {
+    margin-top: 1rem; padding: 1.6rem;
+    background: var(--surface); border: 1px solid var(--hairline);
+    border-radius: 11px;
+  }
+  .finish h2 { font: 600 1.25rem/1.3 var(--display); margin: 0 0 .55rem; }
+  .finish p { margin: 0 0 1rem; color: var(--ink-2); }
+  table.look { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  table.look th, table.look td {
+    text-align: left; padding: .6rem .5rem; border-bottom: 1px solid var(--hairline);
+    vertical-align: top;
+  }
+  table.look th {
+    font: 600 .7rem/1 var(--mono); letter-spacing: .09em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  table.look td:first-child { font-weight: 600; white-space: nowrap; padding-right: 1rem; }
+  table.look tr:last-child td { border-bottom: none; }
+  .verdict { font: 600 .78rem/1 var(--mono); padding: .28rem .5rem; border-radius: 4px; }
+  .v-block { background: #fbe4e2; color: #8f2119; }
+  .v-allow { background: #dff0e4; color: #1c6b3c; }
+  .v-review { background: var(--warn-soft); color: var(--warn); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .v-block { background: #34191a; color: #f08a80; }
+    :root:not([data-theme="light"]) .v-allow { background: #142a1e; color: #6fc793; }
+  }
+  :root[data-theme="dark"] .v-block { background: #34191a; color: #f08a80; }
+  :root[data-theme="dark"] .v-allow { background: #142a1e; color: #6fc793; }
+
+  footer.end {
+    margin-top: 2.5rem; padding-top: 1.4rem; border-top: 1px solid var(--hairline);
+    font-size: .95rem; color: var(--ink-3);
+  }
+  footer.end code { font: 400 .88em var(--mono); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">Capstone BAI-17 · setup</div>
+    <h1>Getting PhishGuard running</h1>
+    <p class="standfirst">
+      Six steps, about five minutes. You do not need to know anything about
+      the project first, and you do not need Docker.
+    </p>
+  </header>
+
+  <div class="picker">
+    <span class="lbl">Your computer</span>
+    <div class="segmented" role="group" aria-label="Choose your operating system">
+      <button type="button" data-os="win" aria-pressed="true">Windows</button>
+      <button type="button" data-os="mac" aria-pressed="false">Mac</button>
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------------------ 1 -->
+  <section class="step">
+    <div class="num">1</div>
+    <h2>Put the project folder somewhere you can find it</h2>
+    <p class="lede">
+      You have a file called <code class="inline-code">phishguard-BAI-17.zip</code>.
+      Unzip it, then move the folder it produces onto your Desktop so the next
+      steps are short.
+    </p>
+
+    <div class="os-only active" data-os="win">
+      <ol class="plain">
+        <li>Right-click the zip file → <b>Extract All…</b> → <b>Extract</b>.</li>
+        <li>You now have a folder called <b>phishguard</b>. Drag it to your Desktop.</li>
+      </ol>
+    </div>
+    <div class="os-only" data-os="mac">
+      <ol class="plain">
+        <li>Double-click the zip file. macOS unzips it beside the file.</li>
+        <li>You now have a folder called <b>phishguard</b>. Drag it to your Desktop.</li>
+      </ol>
+    </div>
+
+    <div class="expect">
+      <span class="h">Check you're right</span>
+      <p>Open the folder. You should see files named <b>start.py</b>,
+      <b>README.md</b> and <b>pyproject.toml</b>. If you only see one folder
+      inside, go into it — that's the real one.</p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ 2 -->
+  <section class="step">
+    <div class="num">2</div>
+    <h2>Open a terminal</h2>
+
+    <p class="vocab">
+      <b>Terminal</b> — a window where you type commands instead of clicking.
+      It's the black-or-white text window you've seen in films. Nothing you type
+      here can break your computer.
+    </p>
+
+    <div class="os-only active" data-os="win">
+      <ol class="plain">
+        <li>Open the <b>phishguard</b> folder.</li>
+        <li>Click once in the empty white space inside the folder, so nothing is selected.</li>
+        <li>Hold <b>Shift</b> and right-click that empty space.</li>
+        <li>Choose <b>Open PowerShell window here</b> — or <b>Open in Terminal</b>
+            on Windows 11.</li>
+      </ol>
+      <p style="margin-top:.9rem">A window opens with white or blue text ending in
+      <code class="inline-code">&gt;</code>. That's your terminal, and it is
+      already pointed at the right folder.</p>
+    </div>
+    <div class="os-only" data-os="mac">
+      <ol class="plain">
+        <li>Open <b>Finder</b> and find the <b>phishguard</b> folder on your Desktop.</li>
+        <li>Right-click the folder itself.</li>
+        <li>Choose <b>Services</b> → <b>New Terminal at Folder</b>.</li>
+      </ol>
+      <p style="margin-top:.9rem">A window opens with text ending in
+      <code class="inline-code">%</code>. That's your terminal, and it is already
+      pointed at the right folder.</p>
+      <details class="snag">
+        <summary>I don't see "New Terminal at Folder"</summary>
+        <div class="inner">
+          <p>It's switched off by default on some Macs. Turn it on:
+          <b>System Settings</b> → <b>Keyboard</b> → <b>Keyboard Shortcuts</b> →
+          <b>Services</b> → tick <b>New Terminal at Folder</b>.</p>
+          <p>Or: open <b>Terminal</b> from Applications → Utilities, type
+          <code>cd </code> (with a space after it), then drag the phishguard
+          folder into the window and press Enter.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ 3 -->
+  <section class="step">
+    <div class="num">3</div>
+    <h2>Check you have Python</h2>
+    <p class="lede">Type this and press Enter.</p>
+
+    <div class="os-only active" data-os="win">
+      <div class="type-this">
+        <span class="tag">Type</span>
+        <code>python --version</code>
+        <button class="copy" type="button" data-copy="python --version">Copy</button>
+      </div>
+      <figure class="term">
+        <div class="term-bar"><i></i><i></i><i></i><span>Windows PowerShell</span></div>
+        <pre class="term-body"><span class="prompt">PS C:\Users\you\Desktop\phishguard&gt;</span> <span class="you">python --version</span>
+<span class="ok">Python 3.12.4</span></pre>
+      </figure>
+    </div>
+    <div class="os-only" data-os="mac">
+      <div class="type-this">
+        <span class="tag">Type</span>
+        <code>python3 --version</code>
+        <button class="copy" type="button" data-copy="python3 --version">Copy</button>
+      </div>
+      <figure class="term">
+        <div class="term-bar"><i></i><i></i><i></i><span>Terminal — zsh</span></div>
+        <pre class="term-body"><span class="prompt">you@Mac phishguard %</span> <span class="you">python3 --version</span>
+<span class="ok">Python 3.12.4</span></pre>
+      </figure>
+    </div>
+
+    <div class="expect">
+      <span class="h">What counts as fine</span>
+      <p>Any number <b>3.10 or higher</b>. So 3.10, 3.11, 3.12, 3.13 — all good.
+      Move on to step 4.</p>
+    </div>
+
+    <details class="snag">
+      <summary>It said "command not found" or "not recognized"</summary>
+      <div class="inner">
+        <p>Python isn't installed, or Windows can't see it. Download it from
+        <b>python.org/downloads</b> and run the installer.</p>
+        <p><b>On the first installer screen, tick "Add python.exe to PATH"
+        before clicking Install.</b> Almost everyone misses this, and it is the
+        reason the command isn't found.</p>
+        <p>Then close the terminal, open a new one (step 2 again), and retry.</p>
+      </div>
+    </details>
+    <details class="snag">
+      <summary>It said 3.9 or lower</summary>
+      <div class="inner">
+        <p>Too old for this project. Install a current version from
+        <b>python.org/downloads</b>, then use that version's name in step 4 —
+        for example <code>python3.12 start.py</code>.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ------------------------------------------------------------ 4 -->
+  <section class="step">
+    <div class="num">4</div>
+    <h2>Run the one command</h2>
+    <p class="lede">
+      This is the only command that matters. It sets everything up for you.
+    </p>
+
+    <div class="os-only active" data-os="win">
+      <div class="type-this">
+        <span class="tag">Type</span>
+        <code>python start.py</code>
+        <button class="copy" type="button" data-copy="python start.py">Copy</button>
+      </div>
+    </div>
+    <div class="os-only" data-os="mac">
+      <div class="type-this">
+        <span class="tag">Type</span>
+        <code>python3 start.py</code>
+        <button class="copy" type="button" data-copy="python3 start.py">Copy</button>
+      </div>
+    </div>
+
+    <p>You'll watch it work through five steps. This is what it looks like:</p>
+
+    <figure class="term">
+      <div class="term-bar"><i></i><i></i><i></i><span>setting up</span></div>
+<pre class="term-body"><span class="dim">================================================================</span>
+ PhishGuard - Adversarially Robust Phishing Defense
+ Capstone BAI-17
+<span class="dim">================================================================</span>
+
+<span class="you">[1/5] Checking your Python</span>
+      <span class="ok">ok</span>  Python 3.12.4
+<span class="you">[2/5] Creating a private environment (.venv)</span>
+      <span class="ok">ok</span>  created
+<span class="you">[3/5] Installing PhishGuard and what it needs</span>
+      <span class="dim">first time only, needs the internet (about a minute)</span>
+      <span class="ok">ok</span>  installed
+<span class="you">[4/5] Checking this machine can run it</span>
+      <span class="ok">ok</span>  environment is good
+
+      <span class="warnc">No model yet, so one is being trained now.</span>
+      <span class="dim">This runs once and takes about 1 to 3 minutes.</span>
+      <span class="ok">ok</span>  model trained in 47 seconds
+<span class="you">[5/5] Starting the server</span>
+
+      Open this in your browser:   <span class="term-cyan">http://localhost:8000</span></pre>
+    </figure>
+
+    <p class="vocab">
+      <b>Why it takes a minute</b> — step 4 builds the phishing detector from
+      scratch on your machine. It happens once. Every time after this, the
+      command takes seconds.
+    </p>
+
+    <div class="expect">
+      <span class="h">You're done when</span>
+      <p>The terminal stops at step 5 and shows a web address. It looks frozen —
+      it isn't. It's the server running. <b>Leave this window open.</b></p>
+    </div>
+
+    <details class="snag">
+      <summary>The install step failed</summary>
+      <div class="inner">
+        <p>Almost always no internet. Connect, then run the same command again —
+        it picks up where it left off.</p>
+      </div>
+    </details>
+    <details class="snag">
+      <summary>It stopped and mentioned memory</summary>
+      <div class="inner">
+        <p>Your machine is short on memory. Close other programs, then train a
+        smaller model:</p>
+        <p><code>.venv/bin/phishguard train --n 4000 --save</code> on Mac, or
+        <code>.venv\Scripts\phishguard train --n 4000 --save</code> on Windows.</p>
+        <p>Then run the start command again.</p>
+      </div>
+    </details>
+    <details class="snag">
+      <summary>Something else went wrong</summary>
+      <div class="inner">
+        <p>The script stops with a plain sentence saying what happened and the
+        command that fixes it. Read the last few lines — the answer is there.</p>
+        <p>If it still won't go, copy the red text and send it to me.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ------------------------------------------------------------ 5 -->
+  <section class="step">
+    <div class="num">5</div>
+    <h2>Open it in your browser</h2>
+    <p class="lede">
+      Your browser should open by itself. If it doesn't, open one and type this
+      address in yourself.
+    </p>
+
+    <div class="type-this">
+      <span class="tag">Address</span>
+      <code>http://localhost:8000</code>
+      <button class="copy" type="button" data-copy="http://localhost:8000">Copy</button>
+    </div>
+
+    <p class="vocab">
+      <b>localhost</b> — your own computer. Nothing is going over the internet
+      and nothing is public; this page only exists on your machine.
+    </p>
+
+    <p>Paste this into the box at the top right, then press <b>Connect</b>:</p>
+
+    <div class="type-this">
+      <span class="tag">Key</span>
+      <code>dev-admin-key-change-me</code>
+      <button class="copy" type="button" data-copy="dev-admin-key-change-me">Copy</button>
+    </div>
+
+    <div class="expect">
+      <span class="h">You're in when</span>
+      <p>The small dot next to the box turns green.</p>
+    </div>
+
+    <details class="snag">
+      <summary>The page won't load at all</summary>
+      <div class="inner">
+        <p>Go back to the terminal. If it has stopped and returned to a prompt,
+        the server exited — scroll up to see why. If it's still sitting at step
+        5, the server is fine; check the address is exactly
+        <code>http://localhost:8000</code>.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ------------------------------------------------------------ 6 -->
+  <section class="step">
+    <div class="num">6</div>
+    <h2>Try it</h2>
+    <p class="lede">
+      Choose an example from the dropdown, then press <b>Assess message</b>.
+      Try these three in order.
+    </p>
+
+    <table class="look">
+      <thead>
+        <tr><th>Choose this example</th><th>What you'll get</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Credential phishing (obvious)</td>
+          <td><span class="verdict v-block">BLOCK</span> — with the reasons listed in plain English</td>
+        </tr>
+        <tr>
+          <td>Legitimate internal mail</td>
+          <td><span class="verdict v-allow">ALLOW</span> — nothing wrong with it</td>
+        </tr>
+        <tr>
+          <td>Cloned brand template (hard)</td>
+          <td><span class="verdict v-block">BLOCK</span> — the one worth understanding</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- --------------------------------------------------------- finish -->
+  <div class="finish">
+    <h2>The example to show your examiner</h2>
+    <p>
+      <b>Cloned brand template</b> is what this whole project is about. Its text
+      is PayPal's real password-reset email, copied word for word — which is
+      exactly what real phishing kits do. Only the link and the sending domain
+      were changed.
+    </p>
+    <p>Assess it, then press <b>Compare with a text-only filter</b>:</p>
+    <table class="look">
+      <thead>
+        <tr><th>Reader</th><th>Score</th><th>What it sees</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Text-only filter</td><td>0.52</td><td>Reads the words. The words are PayPal's own, so it cannot decide.</td></tr>
+        <tr><td><b>PhishGuard</b></td><td><b>0.99</b></td><td>The link goes to <code class="inline-code">paypal-secure-mail.com</code>, a 41-day-old domain that is not PayPal's, from a sender never seen before, sending in a burst. <b>BLOCK.</b></td></tr>
+      </tbody>
+    </table>
+    <p style="margin:1rem 0 0">
+      None of what gave it away is in the words. That single screen is the
+      argument for the entire design. For the second half of the argument, load
+      <b>Compromised internal account (hard)</b>: one reader is fooled, the
+      other three are not, so PhishGuard sends it to a human
+      (<span class="verdict v-review">REVIEW</span>) instead of guessing.
+    </p>
+  </div>
+
+  <footer class="end">
+    <p style="margin:0 0 .6rem"><b>Stopping it:</b> press <code>Ctrl</code> + <code>C</code> in the terminal window.</p>
+    <p style="margin:0 0 .6rem"><b>Starting it again later:</b> repeat steps 2 and 4. It'll be quick — the model is already built.</p>
+    <p style="margin:0"><b>If anything at all misbehaves:</b> run
+    <code>.venv/bin/phishguard doctor --self-test</code> (Mac) or
+    <code>.venv\Scripts\phishguard doctor --self-test</code> (Windows). It checks
+    every part and tells you exactly what's wrong.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Preselect the OS, but keep the toggle obvious either way.
+  var ua = (navigator.userAgent || "") + " " + (navigator.platform || "");
+  var guess = /Mac|iPhone|iPad/i.test(ua) && !/Windows/i.test(ua) ? "mac" : "win";
+
+  function setOS(os) {
+    document.querySelectorAll(".segmented button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.os === os));
+    });
+    document.querySelectorAll(".os-only").forEach(function (el) {
+      el.classList.toggle("active", el.dataset.os === os);
+    });
+  }
+
+  document.querySelectorAll(".segmented button").forEach(function (b) {
+    b.addEventListener("click", function () { setOS(b.dataset.os); });
+  });
+  setOS(guess);
+
+  // Copy buttons — the commands must be typed exactly, so make that easy.
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var text = btn.dataset.copy;
+      var done = function () {
+        var was = btn.textContent;
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = was; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) { /* ignore */ }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

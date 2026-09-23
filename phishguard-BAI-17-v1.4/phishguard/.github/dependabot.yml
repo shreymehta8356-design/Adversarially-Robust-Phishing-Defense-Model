@@ -1,0 +1,30 @@
+# Weekly dependency updates, grouped so they arrive as a handful of pull
+# requests rather than dozens. Every update runs the full CI, including the
+# acceptance gates, before it can merge.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      ml-stack:
+        patterns: ["numpy", "scipy", "scikit-learn", "joblib"]
+      web-stack:
+        patterns: ["fastapi", "uvicorn*", "pydantic*", "python-multipart", "httpx"]
+      dev-tools:
+        patterns: ["pytest*", "ruff", "pip-audit"]
+    labels: ["type: dependencies"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels: ["type: dependencies"]
+
+  - package-ecosystem: docker
+    directory: /docker
+    schedule:
+      interval: weekly
+    labels: ["type: dependencies"]

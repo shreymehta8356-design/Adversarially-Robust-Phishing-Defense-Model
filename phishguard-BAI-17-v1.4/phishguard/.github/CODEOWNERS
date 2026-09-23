@@ -1,0 +1,35 @@
+# Who reviews what. Replace the placeholder handles with your team's GitHub
+# usernames (or one username on a team of one). The split follows the three
+# portfolio roles; see docs/10 §10.2.
+#
+# Later rules take precedence over earlier ones.
+
+*                                   @phishguard-maintainer
+
+# AI data engineer: corpora, splits, hard cases, data dictionary
+/src/phishguard/data/               @phishguard-data-engineer
+/docs/06-data-dictionary.md         @phishguard-data-engineer
+/docs/11-real-data.md               @phishguard-data-engineer
+
+# Model engineer: features, models, defences, attacks, evaluation
+/src/phishguard/features/           @phishguard-model-engineer
+/src/phishguard/models/             @phishguard-model-engineer
+/src/phishguard/defenses/           @phishguard-model-engineer
+/src/phishguard/adversarial/        @phishguard-model-engineer
+/src/phishguard/explain/            @phishguard-model-engineer
+/src/phishguard/eval/               @phishguard-model-engineer
+/docs/07-evaluation-dossier.md      @phishguard-model-engineer
+
+# Systems engineer: service, security, deployment, CI
+/src/phishguard/service/            @phishguard-systems-engineer
+/src/phishguard/static/             @phishguard-systems-engineer
+/docker/                            @phishguard-systems-engineer
+/docker-compose.yml                 @phishguard-systems-engineer
+/.github/                           @phishguard-systems-engineer
+/docs/03-api-contract.md            @phishguard-systems-engineer
+/docs/08-deployment-guide.md        @phishguard-systems-engineer
+
+# Security-sensitive: two reviewers' worth of attention
+/src/phishguard/service/security.py @phishguard-systems-engineer @phishguard-maintainer
+/src/phishguard/service/workflow.py @phishguard-systems-engineer @phishguard-maintainer
+/SECURITY.md                        @phishguard-maintainer

@@ -1,0 +1,101 @@
+# PhishGuard - local deployment.
+#
+#   docker compose up --build
+#
+# Brings up the API (training a model first if none exists), Prometheus
+# scraping its metrics, and Grafana with a provisioned dashboard.
+#
+#   Console      http://localhost:8000
+#   API docs     http://localhost:8000/docs
+#   Prometheus   http://localhost:9090
+#   Grafana      http://localhost:3000   (admin / admin)
+#
+# The observability stack is optional: `docker compose up api` runs the service
+# alone if you only need the console.
+
+name: phishguard
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    image: phishguard/api:1.0.0
+    container_name: phishguard-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      PG_ENVIRONMENT: prod
+      PG_LOG_FORMAT: json
+      PG_LOG_LEVEL: INFO
+      PG_ARTIFACTS_DIR: /data
+      # Development placeholders. Replace before exposing this beyond localhost:
+      #   PG_API_KEYS="analyst:$(openssl rand -hex 24),admin:$(openssl rand -hex 24)"
+      PG_API_KEYS: "analyst:dev-analyst-key-change-me,admin:dev-admin-key-change-me"
+      PG_PSEUDONYMIZATION_SALT: "change-me-in-production"
+      PG_RATE_LIMIT_PER_MINUTE: "600"
+      PG_BOOTSTRAP_N: "12000"
+      PG_CORS_ORIGINS: '["http://localhost:8000","http://127.0.0.1:8000"]'
+    volumes:
+      # The model registry and the audit database. Named so that `docker compose
+      # down` does not discard a trained model or the audit trail.
+      - phishguard-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 300s   # generous: the first start trains a model
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: phishguard-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - phishguard-prometheus:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.enable-lifecycle"
+    depends_on:
+      - api
+    security_opt:
+      - no-new-privileges:true
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: phishguard-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - phishguard-grafana:/var/lib/grafana
+    depends_on:
+      - prometheus
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  phishguard-data:
+  phishguard-prometheus:
+  phishguard-grafana:

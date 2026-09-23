@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="449.126631pt" height="178.890078pt" viewBox="0 0 449.126631 178.890078" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-09-22T18:38:37.887086</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.9, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M -0 178.890078 
+L 449.126631 178.890078 
+L 449.126631 0 
+L -0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 120.96 147.24 
+L 273.186856 147.24 
+L 273.186856 64.44 
+L 120.96 64.44 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 120.96 147.24 
+L 120.96 64.44 
+" clip-path="url(#pcd14cf780e)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_2"/>
+     <g id="text_1">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="120.96" y="157.142188" transform="rotate(-0 120.96 157.142188)">0</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <path d="M 171.00498 147.24 
+L 171.00498 64.44 
+" clip-path="url(#pcd14cf780e)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4"/>
+     <g id="text_2">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="171.00498" y="157.142188" transform="rotate(-0 171.00498 157.142188)">100</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_5">
+      <path d="M 221.04996 147.24 
+L 221.04996 64.44 
+" clip-path="url(#pcd14cf780e)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6"/>
+     <g id="text_3">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="221.04996" y="157.142188" transform="rotate(-0 221.04996 157.142188)">200</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_7">
+      <path d="M 271.09494 147.24 
+L 271.09494 64.44 
+" clip-path="url(#pcd14cf780e)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8"/>
+     <g id="text_4">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="271.09494" y="157.142188" transform="rotate(-0 271.09494 157.142188)">300</text>
+     </g>
+    </g>
+    <g id="text_5">
+     <text style="font-size: 9px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="197.073428" y="168.703203" transform="rotate(-0 197.073428 168.703203)">Benign cost per 1,000 messages</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_9"/>
+     <g id="text_6">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; fill: #0b0b0b" transform="translate(57.510469 79.280352)">Deployed default</text>
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; fill: #0b0b0b" transform="translate(27.748516 88.322492)">121 per 1,000 to a human</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_10"/>
+     <g id="text_7">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; fill: #0b0b0b" transform="translate(62.945156 105.082305)">Minimax-regret</text>
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; fill: #0b0b0b" transform="translate(27.748516 114.216086)">116 per 1,000 to a human</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_11"/>
+     <g id="text_8">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; fill: #0b0b0b" transform="translate(72.609922 131.030352)">Cost-optimal</text>
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; fill: #0b0b0b" transform="translate(27.748516 140.072492)">116 per 1,000 to a human</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 120.96 147.24 
+L 120.96 64.44 
+" style="fill: none; stroke: #c3c2b7; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 120.96 147.24 
+L 273.186856 147.24 
+" style="fill: none; stroke: #c3c2b7; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 123.12 86.43375 
+L 250.030048 86.43375 
+Q 252.190048 86.43375 252.190048 84.27375 
+L 252.190048 75.65625 
+Q 252.190048 73.49625 250.030048 73.49625 
+L 123.12 73.49625 
+Q 120.96 73.49625 120.96 75.65625 
+L 120.96 84.27375 
+Q 120.96 86.43375 123.12 86.43375 
+z
+" clip-path="url(#pcd14cf780e)" style="fill: #2a78d6"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 120.96 86.43375 
+L 250.030048 86.43375 
+L 250.030048 73.49625 
+L 120.96 73.49625 
+z
+" clip-path="url(#pcd14cf780e)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="254.473451" y="82.279258" transform="rotate(-0 254.473451 82.279258)">262</text>
+   </g>
+   <g id="patch_7">
+    <path d="M 123.12 112.30875 
+L 214.568926 112.30875 
+Q 216.728926 112.30875 216.728926 110.14875 
+L 216.728926 101.53125 
+Q 216.728926 99.37125 214.568926 99.37125 
+L 123.12 99.37125 
+Q 120.96 99.37125 120.96 101.53125 
+L 120.96 110.14875 
+Q 120.96 112.30875 123.12 112.30875 
+z
+" clip-path="url(#pcd14cf780e)" style="fill: #b5b3ab"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 120.96 112.30875 
+L 214.568926 112.30875 
+L 214.568926 99.37125 
+L 120.96 99.37125 
+z
+" clip-path="url(#pcd14cf780e)" style="fill: #b5b3ab"/>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="219.012329" y="108.106445" transform="rotate(-0 219.012329 108.106445)">191</text>
+   </g>
+   <g id="patch_9">
+    <path d="M 123.12 138.18375 
+L 214.568926 138.18375 
+Q 216.728926 138.18375 216.728926 136.02375 
+L 216.728926 127.40625 
+Q 216.728926 125.24625 214.568926 125.24625 
+L 123.12 125.24625 
+Q 120.96 125.24625 120.96 127.40625 
+L 120.96 136.02375 
+Q 120.96 138.18375 123.12 138.18375 
+z
+" clip-path="url(#pcd14cf780e)" style="fill: #b5b3ab"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 120.96 138.18375 
+L 214.568926 138.18375 
+L 214.568926 125.24625 
+L 120.96 125.24625 
+z
+" clip-path="url(#pcd14cf780e)" style="fill: #b5b3ab"/>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="219.012329" y="133.981445" transform="rotate(-0 219.012329 133.981445)">191</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="120.96" y="58.44" transform="rotate(-0 120.96 58.44)">On benign traffic, the default costs most</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_11">
+    <path d="M 298.304287 147.24 
+L 425.16 147.24 
+L 425.16 64.44 
+L 298.304287 64.44 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_5">
+     <g id="line2d_12">
+      <path d="M 298.304287 147.24 
+L 298.304287 64.44 
+" clip-path="url(#pb233450958)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_13"/>
+     <g id="text_13">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="298.304287" y="157.142188" transform="rotate(-0 298.304287 157.142188)">0%</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_14">
+      <path d="M 361.732143 147.24 
+L 361.732143 64.44 
+" clip-path="url(#pb233450958)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_15"/>
+     <g id="text_14">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="361.732143" y="157.142188" transform="rotate(-0 361.732143 157.142188)">10%</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_16">
+      <path d="M 425.16 147.24 
+L 425.16 64.44 
+" clip-path="url(#pb233450958)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_17"/>
+     <g id="text_15">
+      <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="425.16" y="157.142188" transform="rotate(-0 425.16 157.142188)">20%</text>
+     </g>
+    </g>
+    <g id="text_16">
+     <text style="font-size: 9px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="361.732143" y="168.760859" transform="rotate(-0 361.732143 168.760859)">Hard phish delivered under attack</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_4">
+     <g id="line2d_18"/>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_19"/>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_20"/>
+    </g>
+   </g>
+   <g id="patch_12">
+    <path d="M 298.304287 147.24 
+L 298.304287 64.44 
+" style="fill: none; stroke: #c3c2b7; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 298.304287 147.24 
+L 425.16 147.24 
+" style="fill: none; stroke: #c3c2b7; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 300.464287 86.43375 
+L 335.786697 86.43375 
+Q 337.946697 86.43375 337.946697 84.27375 
+L 337.946697 75.65625 
+Q 337.946697 73.49625 335.786697 73.49625 
+L 300.464287 73.49625 
+Q 298.304287 73.49625 298.304287 75.65625 
+L 298.304287 84.27375 
+Q 298.304287 86.43375 300.464287 86.43375 
+z
+" clip-path="url(#pb233450958)" style="fill: #2a78d6"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 298.304287 86.43375 
+L 335.786698 86.43375 
+L 335.786698 73.49625 
+L 298.304287 73.49625 
+z
+" clip-path="url(#pb233450958)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="341.752369" y="82.279258" transform="rotate(-0 341.752369 82.279258)">6% · 3 of 48</text>
+   </g>
+   <g id="patch_16">
+    <path d="M 300.464287 112.30875 
+L 375.429108 112.30875 
+Q 377.589108 112.30875 377.589108 110.14875 
+L 377.589108 101.53125 
+Q 377.589108 99.37125 375.429108 99.37125 
+L 300.464287 99.37125 
+Q 298.304287 99.37125 298.304287 101.53125 
+L 298.304287 110.14875 
+Q 298.304287 112.30875 300.464287 112.30875 
+z
+" clip-path="url(#pb233450958)" style="fill: #b5b3ab"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 298.304287 112.30875 
+L 375.429108 112.30875 
+L 375.429108 99.37125 
+L 298.304287 99.37125 
+z
+" clip-path="url(#pb233450958)" style="fill: #b5b3ab"/>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="381.394779" y="108.106445" transform="rotate(-0 381.394779 108.106445)">12% · 6 of 48</text>
+   </g>
+   <g id="patch_18">
+    <path d="M 300.464287 138.18375 
+L 375.429108 138.18375 
+Q 377.589108 138.18375 377.589108 136.02375 
+L 377.589108 127.40625 
+Q 377.589108 125.24625 375.429108 125.24625 
+L 300.464287 125.24625 
+Q 298.304287 125.24625 298.304287 127.40625 
+L 298.304287 136.02375 
+Q 298.304287 138.18375 300.464287 138.18375 
+z
+" clip-path="url(#pb233450958)" style="fill: #b5b3ab"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 298.304287 138.18375 
+L 375.429108 138.18375 
+L 375.429108 125.24625 
+L 298.304287 125.24625 
+z
+" clip-path="url(#pb233450958)" style="fill: #b5b3ab"/>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="381.394779" y="133.981445" transform="rotate(-0 381.394779 133.981445)">12% · 6 of 48</text>
+   </g>
+   <g id="text_20">
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="298.304287" y="58.44" transform="rotate(-0 298.304287 58.44)">Under attack, only the default holds</text>
+   </g>
+  </g>
+  <g id="text_21">
+   <text style="font-weight: 700; font-size: 11px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="8.64" y="16.358906" transform="rotate(-0 8.64 16.358906)">The default buys adversarial robustness with analyst time — and says so</text>
+  </g>
+  <g id="text_22">
+   <text style="font-size: 8.5px; font-family: 'Carlito', 'Calibri', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="8.64" y="32.94" transform="rotate(-0 8.64 32.94)">Illustrative costs, in analyst reviews: missed phish 200, false block 10. 2% phishing, 10% hard traffic.</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pcd14cf780e">
+   <rect x="120.96" y="64.44" width="152.226856" height="82.8"/>
+  </clipPath>
+  <clipPath id="pb233450958">
+   <rect x="298.304287" y="64.44" width="126.855713" height="82.8"/>
+  </clipPath>
+ </defs>
+</svg>

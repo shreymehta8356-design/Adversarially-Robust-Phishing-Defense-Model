@@ -1,0 +1,40 @@
+# One-click deployment on Render (https://render.com) — free plan.
+#
+# In the Render dashboard: New → Blueprint → pick this repository → Apply.
+# Render builds the container, generates the three API keys, trains a model on
+# first start (about three minutes on the free plan) and gives the service an
+# HTTPS address such as https://phishguard-xxxx.onrender.com.
+#
+# Read the generated keys from the service's Environment tab: PG_ADMIN_KEY is
+# what you paste into the console; PG_REPORTER_KEY is for the /report page.
+#
+# The free plan has no persistent disk, so the model is retrained on every
+# deploy and the audit trail lives as long as the instance. A paid plan can
+# attach a disk at /data to keep both.
+services:
+  - type: web
+    name: phishguard
+    runtime: docker
+    plan: free
+    dockerfilePath: ./docker/api.Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: PG_ENVIRONMENT
+        value: prod
+      - key: PG_BOOTSTRAP_N
+        # Small enough to train inside the free plan's 512 MB of memory.
+        value: "5000"
+      - key: PG_API_WORKERS
+        value: "1"
+      - key: PG_CORS_ORIGINS
+        value: '[]'
+      - key: PG_ADMIN_KEY
+        generateValue: true
+      - key: PG_ANALYST_KEY
+        generateValue: true
+      - key: PG_REPORTER_KEY
+        generateValue: true
+      - key: PG_PSEUDONYMIZATION_SALT
+        generateValue: true

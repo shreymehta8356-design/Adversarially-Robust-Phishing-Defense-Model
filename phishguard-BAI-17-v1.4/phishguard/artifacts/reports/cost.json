@@ -1,0 +1,1020 @@
+{
+  "assumptions": {
+    "miss_cost": 200.0,
+    "false_block_cost": 10.0,
+    "review_cost": 1.0,
+    "analyst_miss_rate": 0.05,
+    "analyst_false_block_rate": 0.01,
+    "phish_prevalence": 0.02,
+    "hard_phish_share": 0.1,
+    "hard_ham_share": 0.1
+  },
+  "assumptions_note": "Costs are in units of one analyst review. The defaults are illustrative assumptions, not measurements; every conclusion below is re-derived across a sensitivity sweep.",
+  "deployed": {
+    "review": 0.4,
+    "block": 0.8,
+    "abstain": 0.45,
+    "abstain_mode": "symmetric",
+    "per_1000": 262.2242,
+    "missed_phishing_per_1000": 8.0,
+    "review_per_1000": 172.5575,
+    "false_block_per_1000": 81.6667,
+    "reviews_per_1000": 120.525
+  },
+  "optimum": {
+    "review": 0.45,
+    "block": 0.95,
+    "abstain": 0.25,
+    "abstain_mode": "symmetric",
+    "per_1000": 191.3657,
+    "missed_phishing_per_1000": 20.0,
+    "review_per_1000": 171.3657,
+    "false_block_per_1000": 0.0,
+    "reviews_per_1000": 116.142
+  },
+  "optimum_without_abstention": {
+    "review": 0.25,
+    "block": 0.45,
+    "abstain": null,
+    "abstain_mode": null,
+    "per_1000": 485.5008,
+    "missed_phishing_per_1000": 70.0,
+    "review_per_1000": 29.2954,
+    "false_block_per_1000": 386.2054,
+    "reviews_per_1000": 22.26
+  },
+  "ordinary_mail_only": {
+    "optimum": {
+      "review": 0.2,
+      "block": 0.45,
+      "abstain": null,
+      "abstain_mode": null,
+      "per_1000": 39.9732,
+      "missed_phishing_per_1000": 22.2222,
+      "review_per_1000": 8.3097,
+      "false_block_per_1000": 9.4412,
+      "reviews_per_1000": 4.154
+    },
+    "optimum_without_abstention": {
+      "review": 0.2,
+      "block": 0.45,
+      "abstain": null,
+      "abstain_mode": null,
+      "per_1000": 39.9732,
+      "missed_phishing_per_1000": 22.2222,
+      "review_per_1000": 8.3097,
+      "false_block_per_1000": 9.4412,
+      "reviews_per_1000": 4.154
+    }
+  },
+  "deployed_regret_per_1000": 70.8585,
+  "abstention_saving_per_1000": 294.1351,
+  "curve": [
+    {
+      "review": 0.4,
+      "block": 0.4,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 328.3861,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 238.7194,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 180.853
+    },
+    {
+      "review": 0.4,
+      "block": 0.425,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 328.6061,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 238.9394,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 180.873
+    },
+    {
+      "review": 0.4,
+      "block": 0.45,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 328.6061,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 238.9394,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 180.873
+    },
+    {
+      "review": 0.4,
+      "block": 0.475,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 323.7444,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 234.0777,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 176.453
+    },
+    {
+      "review": 0.4,
+      "block": 0.5,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 316.267,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 226.6003,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 169.655
+    },
+    {
+      "review": 0.4,
+      "block": 0.525,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 309.5295,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 219.8628,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 163.53
+    },
+    {
+      "review": 0.4,
+      "block": 0.55,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 293.0752,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 203.4085,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 148.572
+    },
+    {
+      "review": 0.4,
+      "block": 0.575,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 285.9677,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 196.301,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 142.11
+    },
+    {
+      "review": 0.4,
+      "block": 0.6,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 277.1791,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 187.5124,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 134.121
+    },
+    {
+      "review": 0.4,
+      "block": 0.625,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 274.375,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 184.7084,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 131.572
+    },
+    {
+      "review": 0.4,
+      "block": 0.65,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 273.4403,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 183.7737,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 130.722
+    },
+    {
+      "review": 0.4,
+      "block": 0.675,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 273.4403,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 183.7737,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 130.722
+    },
+    {
+      "review": 0.4,
+      "block": 0.7,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 270.6363,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 180.9696,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 128.173
+    },
+    {
+      "review": 0.4,
+      "block": 0.725,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 270.6363,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 180.9696,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 128.173
+    },
+    {
+      "review": 0.4,
+      "block": 0.75,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 269.7016,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 180.0349,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 127.323
+    },
+    {
+      "review": 0.4,
+      "block": 0.775,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 262.2242,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 172.5575,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 120.525
+    },
+    {
+      "review": 0.4,
+      "block": 0.8,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 262.2242,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 172.5575,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 120.525
+    },
+    {
+      "review": 0.4,
+      "block": 0.825,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 256.6161,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 166.9494,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 115.427
+    },
+    {
+      "review": 0.4,
+      "block": 0.85,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 253.812,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 164.1454,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 112.878
+    },
+    {
+      "review": 0.4,
+      "block": 0.875,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 253.812,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 164.1454,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 112.878
+    },
+    {
+      "review": 0.4,
+      "block": 0.9,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 252.8773,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 163.2107,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 112.028
+    },
+    {
+      "review": 0.4,
+      "block": 0.925,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 251.9427,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 162.276,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 111.179
+    },
+    {
+      "review": 0.4,
+      "block": 0.95,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 251.008,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 161.3413,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 110.329
+    },
+    {
+      "review": 0.4,
+      "block": 0.975,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 243.5305,
+      "missed_phishing_per_1000": 8.0,
+      "review_per_1000": 153.8639,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 103.531
+    },
+    {
+      "review": 0.4,
+      "block": 1.0,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "per_1000": 222.8141,
+      "missed_phishing_per_1000": 12.0,
+      "review_per_1000": 129.1474,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 81.242
+    }
+  ],
+  "text_only": {
+    "optimum": {
+      "review": 0.25,
+      "block": 0.95,
+      "abstain": null,
+      "abstain_mode": null,
+      "per_1000": 206.1916,
+      "missed_phishing_per_1000": 36.0,
+      "review_per_1000": 170.1916,
+      "false_block_per_1000": 0.0,
+      "reviews_per_1000": 111.452
+    },
+    "note": "Optimised over the same threshold grid; it has no abstention control."
+  },
+  "saving_vs_text_only_per_1000": 14.8259,
+  "sensitivity": [
+    {
+      "miss_cost": 20.0,
+      "hard_phish_share": 0.0,
+      "optimum_review": 0.5,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 126.479,
+      "deployed_per_1000": 217.5358,
+      "no_abstention_per_1000": 395.9832,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 20.0,
+      "hard_phish_share": 0.02,
+      "optimum_review": 0.5,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 127.3839,
+      "deployed_per_1000": 217.7645,
+      "no_abstention_per_1000": 397.371,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 20.0,
+      "hard_phish_share": 0.05,
+      "optimum_review": 0.5,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 128.7412,
+      "deployed_per_1000": 218.1075,
+      "no_abstention_per_1000": 399.4527,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 20.0,
+      "hard_phish_share": 0.1,
+      "optimum_review": 0.5,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 131.0034,
+      "deployed_per_1000": 218.6792,
+      "no_abstention_per_1000": 402.9221,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 20.0,
+      "hard_phish_share": 0.25,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 135.669,
+      "deployed_per_1000": 220.3942,
+      "no_abstention_per_1000": 413.3304,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 50.0,
+      "hard_phish_share": 0.0,
+      "optimum_review": 0.5,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 137.7123,
+      "deployed_per_1000": 224.0025,
+      "no_abstention_per_1000": 410.6499,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 50.0,
+      "hard_phish_share": 0.02,
+      "optimum_review": 0.5,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 139.7425,
+      "deployed_per_1000": 224.3893,
+      "no_abstention_per_1000": 414.1193,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 50.0,
+      "hard_phish_share": 0.05,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 142.275,
+      "deployed_per_1000": 224.9696,
+      "no_abstention_per_1000": 419.3235,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 50.0,
+      "hard_phish_share": 0.1,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 143.3282,
+      "deployed_per_1000": 225.9367,
+      "no_abstention_per_1000": 427.9971,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 50.0,
+      "hard_phish_share": 0.25,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 146.4878,
+      "deployed_per_1000": 228.8379,
+      "no_abstention_per_1000": 447.6814,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 100.0,
+      "hard_phish_share": 0.0,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 155.8885,
+      "deployed_per_1000": 234.7803,
+      "no_abstention_per_1000": 423.5344,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 100.0,
+      "hard_phish_share": 0.02,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 156.5789,
+      "deployed_per_1000": 235.4307,
+      "no_abstention_per_1000": 428.4419,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 100.0,
+      "hard_phish_share": 0.05,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 157.6146,
+      "deployed_per_1000": 236.4064,
+      "no_abstention_per_1000": 435.8031,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 100.0,
+      "hard_phish_share": 0.1,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 159.3407,
+      "deployed_per_1000": 238.0325,
+      "no_abstention_per_1000": 448.0717,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 100.0,
+      "hard_phish_share": 0.25,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 164.519,
+      "deployed_per_1000": 242.9108,
+      "no_abstention_per_1000": 484.8775,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 200.0,
+      "hard_phish_share": 0.0,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 185.2218,
+      "deployed_per_1000": 256.3358,
+      "no_abstention_per_1000": 436.5344,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 200.0,
+      "hard_phish_share": 0.02,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 186.4506,
+      "deployed_per_1000": 257.5135,
+      "no_abstention_per_1000": 446.3277,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 200.0,
+      "hard_phish_share": 0.05,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 188.2937,
+      "deployed_per_1000": 259.28,
+      "no_abstention_per_1000": 461.0176,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 200.0,
+      "hard_phish_share": 0.1,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 191.3657,
+      "deployed_per_1000": 262.2242,
+      "no_abstention_per_1000": 485.5008,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 200.0,
+      "hard_phish_share": 0.25,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 200.5815,
+      "deployed_per_1000": 271.0567,
+      "no_abstention_per_1000": 558.9504,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 500.0,
+      "hard_phish_share": 0.0,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 273.2218,
+      "deployed_per_1000": 321.0025,
+      "no_abstention_per_1000": 475.5344,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 500.0,
+      "hard_phish_share": 0.02,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 276.0656,
+      "deployed_per_1000": 323.7618,
+      "no_abstention_per_1000": 499.9852,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 500.0,
+      "hard_phish_share": 0.05,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 280.3312,
+      "deployed_per_1000": 327.9008,
+      "no_abstention_per_1000": 536.6614,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 500.0,
+      "hard_phish_share": 0.1,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 287.4407,
+      "deployed_per_1000": 334.7992,
+      "no_abstention_per_1000": 583.1447,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 500.0,
+      "hard_phish_share": 0.25,
+      "optimum_review": 0.45,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.25,
+      "optimum_per_1000": 308.769,
+      "deployed_per_1000": 355.4942,
+      "no_abstention_per_1000": 659.9996,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 1000.0,
+      "hard_phish_share": 0.0,
+      "optimum_review": 0.1,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.55,
+      "optimum_per_1000": 350.3987,
+      "deployed_per_1000": 428.7803,
+      "no_abstention_per_1000": 530.5641,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 1000.0,
+      "hard_phish_share": 0.02,
+      "optimum_review": 0.15,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.3,
+      "optimum_per_1000": 368.6153,
+      "deployed_per_1000": 434.1757,
+      "no_abstention_per_1000": 564.8927,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 1000.0,
+      "hard_phish_share": 0.05,
+      "optimum_review": 0.15,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.3,
+      "optimum_per_1000": 378.6921,
+      "deployed_per_1000": 442.2689,
+      "no_abstention_per_1000": 616.3857,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 1000.0,
+      "hard_phish_share": 0.1,
+      "optimum_review": 0.15,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.4,
+      "optimum_per_1000": 394.8383,
+      "deployed_per_1000": 455.7575,
+      "no_abstention_per_1000": 669.858,
+      "abstention_pays": true
+    },
+    {
+      "miss_cost": 1000.0,
+      "hard_phish_share": 0.25,
+      "optimum_review": 0.15,
+      "optimum_block": 0.95,
+      "optimum_abstain": 0.4,
+      "optimum_per_1000": 442.0588,
+      "deployed_per_1000": 496.2233,
+      "no_abstention_per_1000": 808.6975,
+      "abstention_pays": true
+    }
+  ],
+  "abstention_breakeven_hard_share": 0.0175,
+  "frontier": [
+    {
+      "review": 0.05,
+      "block": 0.05,
+      "abstain": null,
+      "abstain_mode": null,
+      "reviews_per_1000": 0.0,
+      "missed_phishing_per_1000": 0.12333,
+      "false_blocks_per_1000": 151.33117,
+      "cost_per_1000": 1537.9783
+    },
+    {
+      "review": 0.05,
+      "block": 0.05,
+      "abstain": 0.55,
+      "abstain_mode": "escalate",
+      "reviews_per_1000": 50.221,
+      "missed_phishing_per_1000": 0.04083,
+      "false_blocks_per_1000": 151.33117,
+      "cost_per_1000": 1577.5386
+    },
+    {
+      "review": 0.05,
+      "block": 0.05,
+      "abstain": 0.5,
+      "abstain_mode": "escalate",
+      "reviews_per_1000": 73.196,
+      "missed_phishing_per_1000": 0.02,
+      "false_blocks_per_1000": 151.33117,
+      "cost_per_1000": 1598.8505
+    },
+    {
+      "review": 0.3,
+      "block": 0.95,
+      "abstain": 0.3,
+      "abstain_mode": "escalate",
+      "reviews_per_1000": 109.02,
+      "missed_phishing_per_1000": 0.0,
+      "false_blocks_per_1000": 38.62054,
+      "cost_per_1000": 514.8065
+    }
+  ],
+  "deployed_point": {
+    "review": 0.4,
+    "block": 0.8,
+    "abstain": 0.45,
+    "abstain_mode": "symmetric",
+    "reviews_per_1000": 120.525,
+    "missed_phishing_per_1000": 0.04,
+    "false_blocks_per_1000": 8.16667,
+    "cost_per_1000": 262.2242
+  },
+  "by_miss_cost": [
+    {
+      "miss_cost": 20.0,
+      "review": 0.5,
+      "block": 0.95,
+      "abstain": 0.25,
+      "abstain_mode": "symmetric",
+      "per_1000": 131.0034,
+      "missed_phishing_per_1000": 6.5333,
+      "review_per_1000": 124.4701,
+      "false_block_per_1000": 0.0,
+      "reviews_per_1000": 109.304
+    },
+    {
+      "miss_cost": 50.0,
+      "review": 0.45,
+      "block": 0.95,
+      "abstain": 0.25,
+      "abstain_mode": "symmetric",
+      "per_1000": 143.3282,
+      "missed_phishing_per_1000": 5.0,
+      "review_per_1000": 138.3282,
+      "false_block_per_1000": 0.0,
+      "reviews_per_1000": 116.142
+    },
+    {
+      "miss_cost": 100.0,
+      "review": 0.45,
+      "block": 0.95,
+      "abstain": 0.25,
+      "abstain_mode": "symmetric",
+      "per_1000": 159.3407,
+      "missed_phishing_per_1000": 10.0,
+      "review_per_1000": 149.3407,
+      "false_block_per_1000": 0.0,
+      "reviews_per_1000": 116.142
+    },
+    {
+      "miss_cost": 200.0,
+      "review": 0.45,
+      "block": 0.95,
+      "abstain": 0.25,
+      "abstain_mode": "symmetric",
+      "per_1000": 191.3657,
+      "missed_phishing_per_1000": 20.0,
+      "review_per_1000": 171.3657,
+      "false_block_per_1000": 0.0,
+      "reviews_per_1000": 116.142
+    },
+    {
+      "miss_cost": 500.0,
+      "review": 0.45,
+      "block": 0.95,
+      "abstain": 0.25,
+      "abstain_mode": "symmetric",
+      "per_1000": 287.4407,
+      "missed_phishing_per_1000": 50.0,
+      "review_per_1000": 237.4407,
+      "false_block_per_1000": 0.0,
+      "reviews_per_1000": 116.142
+    },
+    {
+      "miss_cost": 1000.0,
+      "review": 0.15,
+      "block": 0.95,
+      "abstain": 0.4,
+      "abstain_mode": "symmetric",
+      "per_1000": 394.8383,
+      "missed_phishing_per_1000": 20.0,
+      "review_per_1000": 293.1717,
+      "false_block_per_1000": 81.6667,
+      "reviews_per_1000": 148.839
+    },
+    {
+      "miss_cost": 5000.0,
+      "review": 0.3,
+      "block": 0.95,
+      "abstain": 0.3,
+      "abstain_mode": "escalate",
+      "per_1000": 725.2065,
+      "missed_phishing_per_1000": 0.0,
+      "review_per_1000": 339.0011,
+      "false_block_per_1000": 386.2054,
+      "reviews_per_1000": 109.02
+    }
+  ],
+  "minimax_regret": {
+    "review": 0.45,
+    "block": 0.95,
+    "abstain": 0.25,
+    "abstain_mode": "symmetric",
+    "max_regret_per_1000": 2.292,
+    "by_profile": [
+      {
+        "profile": "Lean IT team",
+        "cost_per_1000": 191.366,
+        "regret_per_1000": 0.0,
+        "best_possible_per_1000": 191.366
+      },
+      {
+        "profile": "Finance / legal - invoices matter",
+        "cost_per_1000": 499.741,
+        "regret_per_1000": 0.0,
+        "best_possible_per_1000": 499.741
+      },
+      {
+        "profile": "Staffed SOC, high stakes",
+        "cost_per_1000": 868.379,
+        "regret_per_1000": 2.292,
+        "best_possible_per_1000": 866.087
+      },
+      {
+        "profile": "Regulated, zero tolerance",
+        "cost_per_1000": 2276.077,
+        "regret_per_1000": 0.0,
+        "best_possible_per_1000": 2276.077
+      }
+    ]
+  },
+  "candidate_points": {
+    "deployed": {
+      "review": 0.4,
+      "block": 0.8,
+      "abstain": 0.45,
+      "abstain_mode": "symmetric",
+      "reviews_per_1000": 120.525,
+      "missed_phishing_per_1000": 0.04,
+      "false_blocks_per_1000": 8.16667
+    },
+    "minimax_regret": {
+      "review": 0.45,
+      "block": 0.95,
+      "abstain": 0.25,
+      "abstain_mode": "symmetric",
+      "reviews_per_1000": 116.142,
+      "missed_phishing_per_1000": 0.1,
+      "false_blocks_per_1000": 0.0
+    },
+    "cost_optimal": {
+      "review": 0.45,
+      "block": 0.95,
+      "abstain": 0.25,
+      "abstain_mode": "symmetric",
+      "reviews_per_1000": 116.142,
+      "missed_phishing_per_1000": 0.1,
+      "false_blocks_per_1000": 0.0
+    }
+  },
+  "candidate_costs": {
+    "deployed": 262.2242,
+    "minimax_regret": 191.3657,
+    "cost_optimal": 191.3657
+  },
+  "deployed_max_regret_per_1000": 3719.801,
+  "profiles": [
+    {
+      "profile": "Lean IT team",
+      "miss_cost": 200.0,
+      "false_block_cost": 10.0
+    },
+    {
+      "profile": "Finance / legal - invoices matter",
+      "miss_cost": 500.0,
+      "false_block_cost": 200.0
+    },
+    {
+      "profile": "Staffed SOC, high stakes",
+      "miss_cost": 2000.0,
+      "false_block_cost": 100.0
+    },
+    {
+      "profile": "Regulated, zero tolerance",
+      "miss_cost": 5000.0,
+      "false_block_cost": 500.0
+    }
+  ],
+  "under_attack": {
+    "deployed": {
+      "policy": {
+        "review": 0.4,
+        "block": 0.8,
+        "abstain": 0.45,
+        "abstain_mode": "symmetric"
+      },
+      "rows": [
+        {
+          "budget": 0,
+          "silent_delivery_rate": 0.0,
+          "silent_delivered": 0,
+          "auto_blocked_rate": 0.5208
+        },
+        {
+          "budget": 40,
+          "silent_delivery_rate": 0.0625,
+          "silent_delivered": 3,
+          "auto_blocked_rate": 0.125
+        },
+        {
+          "budget": 120,
+          "silent_delivery_rate": 0.0625,
+          "silent_delivered": 3,
+          "auto_blocked_rate": 0.0625
+        }
+      ],
+      "worst_silent_delivery_rate": 0.0625,
+      "worst_silent_delivered": 3,
+      "n_targets": 48
+    },
+    "minimax_regret": {
+      "policy": {
+        "review": 0.45,
+        "block": 0.95,
+        "abstain": 0.25,
+        "abstain_mode": "symmetric"
+      },
+      "rows": [
+        {
+          "budget": 0,
+          "silent_delivery_rate": 0.0,
+          "silent_delivered": 0,
+          "auto_blocked_rate": 0.4375
+        },
+        {
+          "budget": 40,
+          "silent_delivery_rate": 0.125,
+          "silent_delivered": 6,
+          "auto_blocked_rate": 0.0208
+        },
+        {
+          "budget": 120,
+          "silent_delivery_rate": 0.0417,
+          "silent_delivered": 2,
+          "auto_blocked_rate": 0.0
+        }
+      ],
+      "worst_silent_delivery_rate": 0.125,
+      "worst_silent_delivered": 6,
+      "n_targets": 48
+    },
+    "cost_optimal": {
+      "policy": {
+        "review": 0.45,
+        "block": 0.95,
+        "abstain": 0.25,
+        "abstain_mode": "symmetric"
+      },
+      "rows": [
+        {
+          "budget": 0,
+          "silent_delivery_rate": 0.0,
+          "silent_delivered": 0,
+          "auto_blocked_rate": 0.4375
+        },
+        {
+          "budget": 40,
+          "silent_delivery_rate": 0.125,
+          "silent_delivered": 6,
+          "auto_blocked_rate": 0.0208
+        },
+        {
+          "budget": 120,
+          "silent_delivery_rate": 0.0417,
+          "silent_delivered": 2,
+          "auto_blocked_rate": 0.0
+        }
+      ],
+      "worst_silent_delivery_rate": 0.125,
+      "worst_silent_delivered": 6,
+      "n_targets": 48
+    }
+  }
+}

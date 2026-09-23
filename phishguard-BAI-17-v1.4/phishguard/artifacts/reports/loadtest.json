@@ -1,0 +1,72 @@
+{
+  "mode": "in-process",
+  "explain": true,
+  "cpu_count": 2,
+  "peak_rss_mb": 213.8,
+  "levels": [
+    {
+      "concurrency": 1,
+      "requests": 150,
+      "succeeded": 150,
+      "errors": 0,
+      "error_kinds": {},
+      "seconds": 3.38,
+      "throughput_per_s": 44.4,
+      "mean_ms": 22.47,
+      "p50_ms": 21.51,
+      "p95_ms": 32.68,
+      "p99_ms": 39.65,
+      "max_ms": 48.36
+    },
+    {
+      "concurrency": 2,
+      "requests": 150,
+      "succeeded": 150,
+      "errors": 0,
+      "error_kinds": {},
+      "seconds": 3.402,
+      "throughput_per_s": 44.1,
+      "mean_ms": 44.98,
+      "p50_ms": 44.53,
+      "p95_ms": 57.57,
+      "p99_ms": 70.4,
+      "max_ms": 72.98
+    },
+    {
+      "concurrency": 4,
+      "requests": 150,
+      "succeeded": 150,
+      "errors": 0,
+      "error_kinds": {},
+      "seconds": 3.662,
+      "throughput_per_s": 41.0,
+      "mean_ms": 96.18,
+      "p50_ms": 93.61,
+      "p95_ms": 120.78,
+      "p99_ms": 150.6,
+      "max_ms": 152.36
+    },
+    {
+      "concurrency": 8,
+      "requests": 150,
+      "succeeded": 150,
+      "errors": 0,
+      "error_kinds": {},
+      "seconds": 3.678,
+      "throughput_per_s": 40.8,
+      "mean_ms": 189.87,
+      "p50_ms": 191.86,
+      "p95_ms": 234.44,
+      "p99_ms": 251.89,
+      "max_ms": 251.98
+    }
+  ],
+  "summary": {
+    "peak_throughput_per_s": 44.4,
+    "peak_throughput_concurrency": 1,
+    "max_concurrency_within_budget": 4,
+    "total_errors": 0,
+    "latency_budget_ms": 150.0
+  },
+  "note": "ScanService called directly from a thread pool: the full decision path including the audit write and the review queue, without the web framework. Scoring is CPU-bound, so one process serves requests one at a time in order of arrival (PG_SCORING_CONCURRENCY=1): extra concurrency lengthens the wait, not the work. More throughput comes from more processes ('phishguard serve --workers N'), up to the number of cores."
+}

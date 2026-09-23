@@ -1,0 +1,277 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: every job reads the repository and nothing else.
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: "0"
+  PG_ENVIRONMENT: test
+
+jobs:
+  # ------------------------------------------------------------------ lint --
+  lint:
+    name: Lint and format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      # Pinned: a new ruff release can add rules, and a lint job that fails on
+      # an unchanged tree is noise. Dependabot proposes the upgrade instead.
+      - run: python -m pip install --upgrade pip "ruff==0.15.11"
+      - name: Ruff (lint)
+        run: ruff check src tests scripts
+      - name: Ruff (format check)
+        run: ruff format --check src tests scripts
+
+  # ------------------------------------------------------------------ test --
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Unit and security tests
+        run: pytest tests/unit tests/security -q --cov=phishguard --cov-report=term-missing
+      - name: Integration tests
+        run: pytest tests/integration -q
+      - name: Upload coverage
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: .coverage
+          if-no-files-found: ignore
+
+  # ------------------------------------------------------------- security --
+  security:
+    name: Dependency and secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" pip-audit
+      - name: Audit dependencies for known vulnerabilities
+        run: pip-audit --strict --progress-spinner off
+      - name: Fail on secrets committed to the repository
+        run: |
+          # Belt and braces alongside .gitignore: an API key or a salt in the
+          # tree is an acceptance-gate failure, not a code-review nit.
+          if grep -rInE \
+            '(PG_API_KEYS|PG_PSEUDONYMIZATION_SALT)\s*=\s*["'"'"']?[A-Za-z0-9_-]{16,}' \
+            --include='*.py' --include='*.yml' --include='*.yaml' \
+            --include='*.env' --exclude-dir='.git' . \
+            | grep -v 'change-me' | grep -v 'example'; then
+            echo "::error::a credential-looking value is committed to the repository"
+            exit 1
+          fi
+          echo "no committed credentials found"
+
+  # ------------------------------------------------------- acceptance gates --
+  acceptance:
+    name: Train, evaluate and check the acceptance gates
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,report]"
+
+      - name: Build the corpus and audit it for leakage
+        run: phishguard data --n 9000 --show-kinds
+
+      - name: Train
+        run: phishguard train --n 9000 --save
+
+      - name: Evaluate and enforce the gates
+        # Exits non-zero if any blocking acceptance gate fails, so a robustness
+        # regression cannot be merged.
+        run: phishguard evaluate --n 9000 --budget 10 --max-attacked 150
+
+      - name: Regenerate the model card and the report figures
+        run: |
+          phishguard card
+          phishguard figures
+
+      - name: Load test (throughput, latency percentiles, errors, memory)
+        run: phishguard loadtest --n 9000 --concurrency 1,4,8 --requests 100
+
+      - name: Export the OpenAPI document
+        run: |
+          python -c "
+          from phishguard.service.app import export_openapi
+          print(export_openapi('artifacts/reports/openapi.json'))
+          "
+
+      - name: Upload the evaluation dossier
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-dossier
+          path: |
+            artifacts/reports/evaluation.json
+            artifacts/reports/evaluation.md
+            artifacts/reports/model_card.md
+            artifacts/reports/openapi.json
+            artifacts/reports/loadtest.json
+            artifacts/reports/figures/
+          if-no-files-found: warn
+
+      - name: Summarise the gates in the job summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p = pathlib.Path("artifacts/reports/evaluation.json")
+          if not p.exists():
+              print("no evaluation report produced"); raise SystemExit(0)
+          r = json.loads(p.read_text())
+          acc = r["acceptance"]
+          out = ["## Acceptance gates", "",
+                 f"**{'GO' if acc['passed'] else 'NO-GO'}** - "
+                 f"{acc['n_gates'] - acc['n_failed']}/{acc['n_gates']} passed", "",
+                 "| Gate | Criterion | Observed | Threshold | Result |",
+                 "|---|---|---|---|---|"]
+          for g in acc["gates"]:
+              obs = "n/a" if g["observed"] is None else f"{g['observed']:.4f}"
+              op = ">=" if g["direction"] == "min" else "<="
+              out.append(f"| {g['id']} | {g['name']} | {obs} | {op} {g['threshold']} | "
+                         f"{'PASS' if g['passed'] else 'FAIL'} |")
+          rob = r.get("robustness", {})
+          out += ["", "## Robustness", "",
+                  f"- Attack success rate: **{rob.get('attack_success_rate')}**",
+                  f"- Macro F1 drop under attack: **{rob.get('macro_f1_drop')}**"]
+          pathlib.Path(__import__("os").environ["GITHUB_STEP_SUMMARY"]).write_text(
+              "\n".join(out), encoding="utf-8")
+          PY
+
+  # ----------------------------------------------------------------- image --
+  container:
+    name: Build and smoke-test the container
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/api.Dockerfile
+          push: false
+          load: true
+          tags: phishguard/api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start the container and wait for readiness
+        run: |
+          docker run -d --name pg-ci -p 8000:8000 \
+            -e PG_ENVIRONMENT=dev \
+            -e PG_API_KEYS="analyst:ci-analyst-key,admin:ci-admin-key,reporter:ci-reporter-key" \
+            -e PG_BOOTSTRAP_N=4000 \
+            phishguard/api:ci
+          for i in $(seq 1 90); do
+            if curl -fsS http://localhost:8000/readyz >/dev/null 2>&1; then
+              echo "ready after ${i}0s"; break
+            fi
+            sleep 10
+          done
+          curl -fsS http://localhost:8000/readyz
+
+      - name: Smoke-test the API
+        run: |
+          set -e
+          curl -fsS http://localhost:8000/healthz | tee /dev/stderr | grep -q '"status":"ok"'
+          curl -fsS http://localhost:8000/metrics | grep -q phishguard_uptime_seconds
+          # A message that should be blocked.
+          curl -fsS -X POST http://localhost:8000/api/v1/scan \
+            -H 'Content-Type: application/json' -H 'X-API-Key: ci-analyst-key' \
+            -d '{"subject":"URGENT: verify your account",
+                 "body":"Confirm your password at http://paypa1-secure.tk/login now.",
+                 "sender":"PayPal <no-reply@paypa1-secure.tk>",
+                 "auth":{"spf":"fail","dkim":"none","dmarc":"fail"}}' \
+            | tee /dev/stderr | grep -qE '"band":"(BLOCK|REVIEW)"'
+          # An unauthenticated request must be refused.
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST \
+            http://localhost:8000/api/v1/scan -H 'Content-Type: application/json' -d '{}')
+          test "$code" = "401" || { echo "expected 401, got $code"; exit 1; }
+          # An analyst key must not reach an admin endpoint.
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            http://localhost:8000/api/v1/decisions -H 'X-API-Key: ci-analyst-key')
+          test "$code" = "403" || { echo "expected 403, got $code"; exit 1; }
+          # A reporter may report, is never shown a score, and cannot scan.
+          curl -fsS -X POST http://localhost:8000/api/v1/reports \
+            -H 'Content-Type: application/json' -H 'X-API-Key: ci-reporter-key' \
+            -d '{"message":{"subject":"Invoice attached","body":"Please see the attached invoice.",
+                 "sender":"Accounts <ap@supplier-example.com>"},"category":"payment_request"}' \
+            > report.json
+          cat report.json; echo
+          grep -q '"case_id"' report.json
+          if grep -qE '"(score|band)"' report.json; then echo "reporter saw a score"; exit 1; fi
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8000/api/v1/scan \
+            -H 'Content-Type: application/json' -H 'X-API-Key: ci-reporter-key' \
+            -d '{"subject":"x","body":"y"}')
+          test "$code" = "403" || { echo "expected 403 for a reporter scan, got $code"; exit 1; }
+          # The reported message is in the analysts' queue.
+          curl -fsS http://localhost:8000/api/v1/cases -H 'X-API-Key: ci-analyst-key' \
+            | grep -q '"origin":"user_report"'
+          # Responses carry a W3C trace context and per-stage timings.
+          curl -fsS -D headers.txt -o /dev/null -X POST http://localhost:8000/api/v1/scan \
+            -H 'Content-Type: application/json' -H 'X-API-Key: ci-analyst-key' \
+            -H 'traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01' \
+            -d '{"subject":"Team lunch","body":"Friday at noon?","sender":"Sam <sam@corp.example>"}'
+          grep -qi '^traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-' headers.txt
+          grep -qi '^server-timing: ' headers.txt
+          # A saved email (.eml) can be imported as-is and is assessed and audited.
+          printf 'From: "PayPal" <service@paypa1-secure-login.com>\nSubject: Your account has been limited\n\nVerify now: http://paypa1-secure-login.com/verify\n' > phish.eml
+          curl -fsS -X POST http://localhost:8000/api/v1/ingest \
+            -H 'Content-Type: message/rfc822' -H 'X-API-Key: ci-analyst-key' -H 'X-Filename: phish.eml' \
+            --data-binary @phish.eml | tee /dev/stderr | grep -q '"received":1'
+          echo "smoke tests passed"
+
+      - name: Container logs
+        if: always()
+        run: docker logs pg-ci || true
+
+      - name: Stop
+        if: always()
+        run: docker rm -f pg-ci || true

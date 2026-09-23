@@ -1,0 +1,1451 @@
+{
+  "benchmark": "PG-HARD-1",
+  "n_records": 192,
+  "variants_per_case": 8,
+  "seed": 20260912,
+  "budget": {
+    "target_review_fpr": 0.00385,
+    "target_block_fpr": 0.00096,
+    "note": "Each system's thresholds were chosen on the ordinary held-out test set so that all systems share this false-alarm budget. No PG-HARD record influenced any threshold."
+  },
+  "ordinary_mail": {
+    "n": 1938,
+    "review_load_rate": 0.1099,
+    "false_block_rate": 0.0,
+    "silent_delivery_rate": 0.0022,
+    "note": "Measured on the ordinary held-out test set with the same deployed policy. This is the price of the hard-case result: escalation is only a defence if the escalation queue stays small enough for a human to work."
+  },
+  "systems": {
+    "phishguard": {
+      "n": 192,
+      "thresholds": {
+        "review": 0.4,
+        "block": 0.8
+      },
+      "silent_delivery": 0,
+      "silent_delivery_rate": 0.0,
+      "false_block": 8,
+      "false_block_rate": 0.0833,
+      "acceptable_rate": 0.9583,
+      "auto_blocked_phish_rate": 0.5208,
+      "review_load_rate": 0.5781,
+      "roc_auc": 0.71821,
+      "macro_f1_at_block": 0.70078,
+      "mean_score_phish": 0.8331,
+      "mean_score_ham": 0.4785,
+      "separation": 0.3546,
+      "bands": {
+        "ALLOW": 23,
+        "REVIEW": 111,
+        "BLOCK": 58
+      },
+      "bands_by_label": {
+        "phishing": {
+          "ALLOW": 0,
+          "REVIEW": 46,
+          "BLOCK": 50
+        },
+        "legitimate": {
+          "ALLOW": 23,
+          "REVIEW": 65,
+          "BLOCK": 8
+        }
+      },
+      "label": "PhishGuard (full tri-modal ensemble)"
+    },
+    "B1_tfidf_logreg": {
+      "n": 192,
+      "thresholds": {
+        "review": 0.392022,
+        "block": 0.467013
+      },
+      "silent_delivery": 0,
+      "silent_delivery_rate": 0.0,
+      "false_block": 49,
+      "false_block_rate": 0.5104,
+      "acceptable_rate": 0.7448,
+      "auto_blocked_phish_rate": 0.9167,
+      "review_load_rate": 0.0417,
+      "roc_auc": 0.86871,
+      "macro_f1_at_block": 0.68894,
+      "mean_score_phish": 0.8382,
+      "mean_score_ham": 0.4863,
+      "separation": 0.3519,
+      "bands": {
+        "ALLOW": 47,
+        "REVIEW": 8,
+        "BLOCK": 137
+      },
+      "bands_by_label": {
+        "phishing": {
+          "ALLOW": 0,
+          "REVIEW": 8,
+          "BLOCK": 88
+        },
+        "legitimate": {
+          "ALLOW": 47,
+          "REVIEW": 0,
+          "BLOCK": 49
+        }
+      },
+      "label": "Text-only filter (TF-IDF + logistic regression)"
+    },
+    "B0_rule_checklist": {
+      "n": 192,
+      "thresholds": {
+        "review": 0.880797,
+        "block": 0.916827
+      },
+      "silent_delivery": 74,
+      "silent_delivery_rate": 0.7708,
+      "false_block": 0,
+      "false_block_rate": 0.0,
+      "acceptable_rate": 0.6146,
+      "auto_blocked_phish_rate": 0.1458,
+      "review_load_rate": 0.0417,
+      "roc_auc": 0.86632,
+      "macro_f1_at_block": 0.47764,
+      "mean_score_phish": 0.4717,
+      "mean_score_ham": 0.0694,
+      "separation": 0.4022,
+      "bands": {
+        "ALLOW": 170,
+        "REVIEW": 8,
+        "BLOCK": 14
+      },
+      "bands_by_label": {
+        "phishing": {
+          "ALLOW": 74,
+          "REVIEW": 8,
+          "BLOCK": 14
+        },
+        "legitimate": {
+          "ALLOW": 96,
+          "REVIEW": 0,
+          "BLOCK": 0
+        }
+      },
+      "label": "Hand-written rule checklist"
+    }
+  },
+  "per_case": [
+    {
+      "case_id": "HN-REBRAND",
+      "title": "Legitimate supplier on a three-week-old domain",
+      "label": 0,
+      "defeats": "domain age",
+      "rationale": "Domain age is one of the strongest single phishing signals, and it is wrong every time a real company rebrands, spins out, or registers a regional domain. Here a genuine supplier mails from a 22-day-old domain about a billing change -- textually identical to invoice fraud.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 0.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 0,
+        "BLOCK": 8
+      },
+      "failed": true,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK"
+      ]
+    },
+    {
+      "case_id": "HN-ESP-REDIRECT",
+      "title": "Genuine sign-in code behind an ESP click-tracker",
+      "label": 0,
+      "defeats": "URL reputation",
+      "rationale": "Real transactional mail is routinely sent through an email service provider whose click tracker rewrites every link, so the visible hostname does not match the brand. Any rule of the form 'redirect through a third-party domain implies phishing' fires on a large fraction of legitimate mail.",
+      "n": 8,
+      "mean_score": 0.7024,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.1111,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.4,
+        0.108
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HN-IT-REAUTH",
+      "title": "Real IT notice demanding MFA re-enrolment by Friday",
+      "label": 0,
+      "defeats": "text content",
+      "rationale": "Genuine security administration mail uses exactly the vocabulary that phishing training tells users to distrust: a deadline, a consequence, and a link to authenticate. Content-only models cannot separate this from credential phishing because the content really is the same.",
+      "n": 8,
+      "mean_score": 0.9932,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.9727,
+        0.9727
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HN-NEW-SUPPLIER",
+      "title": "First invoice from a genuine new supplier",
+      "label": 0,
+      "defeats": "sender history",
+      "rationale": "Every real business relationship has a first message. Treating 'no prior contact plus an invoice plus an attachment' as malicious blocks onboarding mail for every new supplier a company takes on.",
+      "n": 8,
+      "mean_score": 0.0,
+      "worst_score": 0.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 7,
+        "REVIEW": 1,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW"
+      ]
+    },
+    {
+      "case_id": "HN-ESIGN",
+      "title": "Genuine e-signature request with a unique token link",
+      "label": 0,
+      "defeats": "URL structure",
+      "rationale": "E-signature notifications carry a long opaque single-use token in the path and warn the reader not to forward the mail -- the same shape and the same secrecy cue as a phishing link.",
+      "n": 8,
+      "mean_score": 0.2278,
+      "worst_score": 0.4,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.4,
+        0.0,
+        0.4,
+        0.1111,
+        0.0,
+        0.1111,
+        0.4,
+        0.4
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HN-RECRUITER",
+      "title": "Cold recruiter outreach from a free-mail address",
+      "label": 0,
+      "defeats": "sender reputation",
+      "rationale": "Freemail plus no prior contact plus an external link is a classic phishing profile, and also describes most independent recruiters, freelancers and small consultancies.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HN-BANK-NIGHT",
+      "title": "Real bank fraud alert received at 03:00",
+      "label": 0,
+      "defeats": "behavioural timing",
+      "rationale": "Off-hours delivery is a phishing signal, but fraud alerts are generated by the fraud itself, which happens at night precisely because it is night. The timing signal is inverted for exactly the messages that matter most to the user.",
+      "n": 8,
+      "mean_score": 0.3451,
+      "worst_score": 0.4,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.4,
+        0.4,
+        0.4,
+        0.1515,
+        0.4,
+        0.2095,
+        0.4,
+        0.4
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HN-SHORTLINK",
+      "title": "Colleague sharing a bit.ly link in a live thread",
+      "label": 0,
+      "defeats": "URL reputation",
+      "rationale": "Link shorteners hide the destination and are heavily abused, but they remain in ordinary internal use. Sender history and thread depth are the only things separating this from an attack.",
+      "n": 8,
+      "mean_score": 0.1111,
+      "worst_score": 0.1111,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.1111,
+        0.1111,
+        0.1111,
+        0.1111,
+        0.1111,
+        0.1111,
+        0.1111,
+        0.1111
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HN-NEWSLETTER",
+      "title": "Marketing newsletter with deadline pressure",
+      "label": 0,
+      "defeats": "text content",
+      "rationale": "Legitimate marketing is engineered to create urgency and to be clicked. 'Last chance', 'ends tonight' and a dozen tracked links are standard practice, not evidence of fraud.",
+      "n": 8,
+      "mean_score": 0.0,
+      "worst_score": 0.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 8,
+        "REVIEW": 0,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "variant_bands": [
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW"
+      ]
+    },
+    {
+      "case_id": "HN-LIST-DMARC",
+      "title": "Mailing-list post that fails SPF, DKIM and DMARC",
+      "label": 0,
+      "defeats": "SMTP authentication",
+      "rationale": "A mailing list rewrites the body and re-sends, which breaks DKIM and therefore DMARC for the original author. Authentication failure is a strong signal that is structurally guaranteed to be wrong for every discussion list in the organisation.",
+      "n": 8,
+      "mean_score": 0.0,
+      "worst_score": 0.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 8,
+        "REVIEW": 0,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "variant_bands": [
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW",
+        "ALLOW"
+      ]
+    },
+    {
+      "case_id": "HN-CONFERENCE",
+      "title": "Academic committee invitation from an unknown domain",
+      "label": 0,
+      "defeats": "domain reputation",
+      "rationale": "Conference domains are registered a few months before the event, used once, and abandoned -- a lifecycle indistinguishable from disposable attacker infrastructure.",
+      "n": 8,
+      "mean_score": 0.3629,
+      "worst_score": 0.4,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.4,
+        0.3894,
+        0.1136,
+        0.4,
+        0.4,
+        0.4,
+        0.4,
+        0.4
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HN-REAL-RESET",
+      "title": "The genuine password reset the clone copies",
+      "label": 0,
+      "defeats": "text content",
+      "rationale": "This is the exact message that HP-CLONE imitates, sent from the real domain. The pair is the benchmark's control: a system that separates them is using provenance, and a system that scores them alike is reading the words.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HP-CLONE",
+      "title": "Word-perfect brand clone, fully authenticated",
+      "label": 1,
+      "defeats": "text content",
+      "rationale": "Phishing kits ship with the real email copied verbatim; only the link and the sending domain change. The attacker publishes SPF, signs with DKIM and aligns DMARC on their own lookalike domain, so authentication passes. Nothing in the language is wrong.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 0,
+        "BLOCK": 8
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK"
+      ]
+    },
+    {
+      "case_id": "HP-BEC",
+      "title": "Business email compromise with no link and no attachment",
+      "label": 1,
+      "defeats": "URL and attachment features",
+      "rationale": "The opening message of a BEC chain carries no payload at all -- it exists to get a reply. Every URL and attachment feature is zero, so a detector built on payload analysis has nothing to look at.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 0,
+        "BLOCK": 8
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK"
+      ]
+    },
+    {
+      "case_id": "HP-COMPROMISED",
+      "title": "Phish from a genuine internal account, 318 prior messages",
+      "label": 1,
+      "defeats": "sender history",
+      "rationale": "When an internal mailbox is taken over, every provenance signal endorses the attacker: real domain, passing authentication, years of history, internal sender. This is the case where relationship trust becomes a liability.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HP-TRUSTED-HOST",
+      "title": "Credential page hosted on a reputable platform",
+      "label": 1,
+      "defeats": "URL reputation",
+      "rationale": "The landing page sits on a domain that cannot be blocklisted without breaking normal business use. Reputation lookups return 'good' because the host really is good; the content on it is not.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 6,
+        "BLOCK": 2
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "BLOCK",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "BLOCK"
+      ]
+    },
+    {
+      "case_id": "HP-REDIRECT",
+      "title": "Attack laundered through an open redirect on a trusted domain",
+      "label": 1,
+      "defeats": "URL reputation",
+      "rationale": "The link a user hovers and a scanner resolves belongs to a well-known brand; the redirect parameter carries the real destination. Only a detector that parses the query string sees the attack.",
+      "n": 8,
+      "mean_score": 0.5,
+      "worst_score": 0.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HP-AGED",
+      "title": "Attack from a six-year-old repurposed domain",
+      "label": 1,
+      "defeats": "domain age",
+      "rationale": "Expired domains are bought precisely to defeat age heuristics. A 2,140-day-old domain reads as established infrastructure on every age-based feature.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 0,
+        "BLOCK": 8
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK"
+      ]
+    },
+    {
+      "case_id": "HP-HOMOGLYPH",
+      "title": "Lookalike domain using character substitution",
+      "label": 1,
+      "defeats": "human reading",
+      "rationale": "The substitution survives a careful human glance at the address bar. It is caught by string-distance comparison against a brand list, not by reading.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 0,
+        "BLOCK": 8
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK"
+      ]
+    },
+    {
+      "case_id": "HP-CALLBACK",
+      "title": "Callback phishing: a phone number instead of a link",
+      "label": 1,
+      "defeats": "URL features entirely",
+      "rationale": "Telephone-oriented attack delivery moves the attack off email altogether. The message is a plausible receipt; the payload is the number the victim dials. All 107 URL features are zero.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 0,
+        "BLOCK": 8
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK"
+      ]
+    },
+    {
+      "case_id": "HP-HIJACK",
+      "title": "Reply injected into a real, ongoing thread",
+      "label": 1,
+      "defeats": "thread and history context",
+      "rationale": "Thread hijacking quotes genuine earlier correspondence, so thread depth, prior-reply count and topical coherence all vouch for the message. The user is expecting exactly this reply.",
+      "n": 8,
+      "mean_score": 0.0555,
+      "worst_score": 0.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.0,
+        0.0105,
+        0.1111,
+        0.1111,
+        0.1111,
+        0.0,
+        0.0,
+        0.1005
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HP-IBAN",
+      "title": "Invoice fraud: correct relationship, changed bank details",
+      "label": 1,
+      "defeats": "sender history",
+      "rationale": "A real supplier, a real invoice number, a real amount, 47 prior messages -- and new payment details. The fraud is one changed fact inside an otherwise entirely genuine message.",
+      "n": 8,
+      "mean_score": 0.4417,
+      "worst_score": 0.4,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        0.4,
+        0.4,
+        0.4,
+        0.7335,
+        0.4,
+        0.4,
+        0.4,
+        0.4
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "case_id": "HP-QR",
+      "title": "QR-code phishing with no textual URL",
+      "label": 1,
+      "defeats": "URL extraction",
+      "rationale": "The destination is encoded in an inline image, so URL extraction returns nothing. Detection has to fall back on sender provenance and the mismatch between an internal-sounding sender and an external domain.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 0,
+        "BLOCK": 8
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK",
+        "BLOCK"
+      ]
+    },
+    {
+      "case_id": "HP-SLOWDRIP",
+      "title": "Low-volume spear phish with no urgency cues",
+      "label": 1,
+      "defeats": "behavioural campaign signals",
+      "rationale": "One recipient, no burst, an aged domain, and deliberately relaxed wording -- 'no rush on this'. Every campaign-shaped behavioural feature is neutral, which is what a patient attacker buys with volume restraint.",
+      "n": 8,
+      "mean_score": 1.0,
+      "worst_score": 1.0,
+      "pass_rate": 1.0,
+      "bands": {
+        "ALLOW": 0,
+        "REVIEW": 8,
+        "BLOCK": 0
+      },
+      "failed": false,
+      "variant_scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_bands": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    }
+  ],
+  "per_defeated_signal": [
+    {
+      "defeats": "domain age",
+      "cases": 2,
+      "n": 16,
+      "pass_rate": 0.5
+    },
+    {
+      "defeats": "URL reputation",
+      "cases": 4,
+      "n": 32,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "text content",
+      "cases": 4,
+      "n": 32,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "sender history",
+      "cases": 3,
+      "n": 24,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "URL structure",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "sender reputation",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "behavioural timing",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "SMTP authentication",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "domain reputation",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "URL and attachment features",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "human reading",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "URL features entirely",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "thread and history context",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "URL extraction",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    },
+    {
+      "defeats": "behavioural campaign signals",
+      "cases": 1,
+      "n": 8,
+      "pass_rate": 1.0
+    }
+  ],
+  "failing_cases": [
+    {
+      "case_id": "HN-REBRAND",
+      "title": "Legitimate supplier on a three-week-old domain",
+      "label": 0,
+      "defeats": "domain age",
+      "pass_rate": 0.0,
+      "worst_score": 1.0
+    }
+  ],
+  "description": {
+    "benchmark": "PG-HARD-1",
+    "n_cases": 24,
+    "n_hard_negatives": 12,
+    "n_hard_positives": 12,
+    "grading": {
+      "tolerated_for_phish": [
+        "BLOCK",
+        "REVIEW"
+      ],
+      "tolerated_for_ham": [
+        "ALLOW",
+        "REVIEW"
+      ],
+      "headline_failures": {
+        "silent_delivery": "a hard positive that received ALLOW",
+        "false_block": "a hard negative that received BLOCK"
+      }
+    },
+    "defeated_signals": [
+      "SMTP authentication",
+      "URL and attachment features",
+      "URL extraction",
+      "URL features entirely",
+      "URL reputation",
+      "URL structure",
+      "behavioural campaign signals",
+      "behavioural timing",
+      "domain age",
+      "domain reputation",
+      "human reading",
+      "sender history",
+      "sender reputation",
+      "text content",
+      "thread and history context"
+    ],
+    "cases": [
+      {
+        "case_id": "HN-ESP-REDIRECT",
+        "label": 0,
+        "family": "HN-ESP",
+        "title": "Genuine sign-in code behind an ESP click-tracker",
+        "defeats": "URL reputation",
+        "rationale": "Real transactional mail is routinely sent through an email service provider whose click tracker rewrites every link, so the visible hostname does not match the brand. Any rule of the form 'redirect through a third-party domain implies phishing' fires on a large fraction of legitimate mail.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-REBRAND",
+        "label": 0,
+        "family": "HN",
+        "title": "Legitimate supplier on a three-week-old domain",
+        "defeats": "domain age",
+        "rationale": "Domain age is one of the strongest single phishing signals, and it is wrong every time a real company rebrands, spins out, or registers a regional domain. Here a genuine supplier mails from a 22-day-old domain about a billing change -- textually identical to invoice fraud.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-IT-REAUTH",
+        "label": 0,
+        "family": "HN-IT",
+        "title": "Real IT notice demanding MFA re-enrolment by Friday",
+        "defeats": "text content",
+        "rationale": "Genuine security administration mail uses exactly the vocabulary that phishing training tells users to distrust: a deadline, a consequence, and a link to authenticate. Content-only models cannot separate this from credential phishing because the content really is the same.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-NEW-SUPPLIER",
+        "label": 0,
+        "family": "HN-NEW",
+        "title": "First invoice from a genuine new supplier",
+        "defeats": "sender history",
+        "rationale": "Every real business relationship has a first message. Treating 'no prior contact plus an invoice plus an attachment' as malicious blocks onboarding mail for every new supplier a company takes on.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-ESIGN",
+        "label": 0,
+        "family": "HN",
+        "title": "Genuine e-signature request with a unique token link",
+        "defeats": "URL structure",
+        "rationale": "E-signature notifications carry a long opaque single-use token in the path and warn the reader not to forward the mail -- the same shape and the same secrecy cue as a phishing link.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-RECRUITER",
+        "label": 0,
+        "family": "HN",
+        "title": "Cold recruiter outreach from a free-mail address",
+        "defeats": "sender reputation",
+        "rationale": "Freemail plus no prior contact plus an external link is a classic phishing profile, and also describes most independent recruiters, freelancers and small consultancies.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-BANK-NIGHT",
+        "label": 0,
+        "family": "HN-BANK",
+        "title": "Real bank fraud alert received at 03:00",
+        "defeats": "behavioural timing",
+        "rationale": "Off-hours delivery is a phishing signal, but fraud alerts are generated by the fraud itself, which happens at night precisely because it is night. The timing signal is inverted for exactly the messages that matter most to the user.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-SHORTLINK",
+        "label": 0,
+        "family": "HN",
+        "title": "Colleague sharing a bit.ly link in a live thread",
+        "defeats": "URL reputation",
+        "rationale": "Link shorteners hide the destination and are heavily abused, but they remain in ordinary internal use. Sender history and thread depth are the only things separating this from an attack.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-NEWSLETTER",
+        "label": 0,
+        "family": "HN",
+        "title": "Marketing newsletter with deadline pressure",
+        "defeats": "text content",
+        "rationale": "Legitimate marketing is engineered to create urgency and to be clicked. 'Last chance', 'ends tonight' and a dozen tracked links are standard practice, not evidence of fraud.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-LIST-DMARC",
+        "label": 0,
+        "family": "HN-LIST",
+        "title": "Mailing-list post that fails SPF, DKIM and DMARC",
+        "defeats": "SMTP authentication",
+        "rationale": "A mailing list rewrites the body and re-sends, which breaks DKIM and therefore DMARC for the original author. Authentication failure is a strong signal that is structurally guaranteed to be wrong for every discussion list in the organisation.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-CONFERENCE",
+        "label": 0,
+        "family": "HN",
+        "title": "Academic committee invitation from an unknown domain",
+        "defeats": "domain reputation",
+        "rationale": "Conference domains are registered a few months before the event, used once, and abandoned -- a lifecycle indistinguishable from disposable attacker infrastructure.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HN-REAL-RESET",
+        "label": 0,
+        "family": "HN-REAL",
+        "title": "The genuine password reset the clone copies",
+        "defeats": "text content",
+        "rationale": "This is the exact message that HP-CLONE imitates, sent from the real domain. The pair is the benchmark's control: a system that separates them is using provenance, and a system that scores them alike is reading the words.",
+        "tolerated": [
+          "ALLOW",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-CLONE",
+        "label": 1,
+        "family": "HP",
+        "title": "Word-perfect brand clone, fully authenticated",
+        "defeats": "text content",
+        "rationale": "Phishing kits ship with the real email copied verbatim; only the link and the sending domain change. The attacker publishes SPF, signs with DKIM and aligns DMARC on their own lookalike domain, so authentication passes. Nothing in the language is wrong.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-BEC",
+        "label": 1,
+        "family": "HP",
+        "title": "Business email compromise with no link and no attachment",
+        "defeats": "URL and attachment features",
+        "rationale": "The opening message of a BEC chain carries no payload at all -- it exists to get a reply. Every URL and attachment feature is zero, so a detector built on payload analysis has nothing to look at.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-COMPROMISED",
+        "label": 1,
+        "family": "HP",
+        "title": "Phish from a genuine internal account, 318 prior messages",
+        "defeats": "sender history",
+        "rationale": "When an internal mailbox is taken over, every provenance signal endorses the attacker: real domain, passing authentication, years of history, internal sender. This is the case where relationship trust becomes a liability.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-TRUSTED-HOST",
+        "label": 1,
+        "family": "HP-TRUSTED",
+        "title": "Credential page hosted on a reputable platform",
+        "defeats": "URL reputation",
+        "rationale": "The landing page sits on a domain that cannot be blocklisted without breaking normal business use. Reputation lookups return 'good' because the host really is good; the content on it is not.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-REDIRECT",
+        "label": 1,
+        "family": "HP",
+        "title": "Attack laundered through an open redirect on a trusted domain",
+        "defeats": "URL reputation",
+        "rationale": "The link a user hovers and a scanner resolves belongs to a well-known brand; the redirect parameter carries the real destination. Only a detector that parses the query string sees the attack.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-AGED",
+        "label": 1,
+        "family": "HP",
+        "title": "Attack from a six-year-old repurposed domain",
+        "defeats": "domain age",
+        "rationale": "Expired domains are bought precisely to defeat age heuristics. A 2,140-day-old domain reads as established infrastructure on every age-based feature.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-HOMOGLYPH",
+        "label": 1,
+        "family": "HP",
+        "title": "Lookalike domain using character substitution",
+        "defeats": "human reading",
+        "rationale": "The substitution survives a careful human glance at the address bar. It is caught by string-distance comparison against a brand list, not by reading.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-CALLBACK",
+        "label": 1,
+        "family": "HP",
+        "title": "Callback phishing: a phone number instead of a link",
+        "defeats": "URL features entirely",
+        "rationale": "Telephone-oriented attack delivery moves the attack off email altogether. The message is a plausible receipt; the payload is the number the victim dials. All 107 URL features are zero.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-HIJACK",
+        "label": 1,
+        "family": "HP",
+        "title": "Reply injected into a real, ongoing thread",
+        "defeats": "thread and history context",
+        "rationale": "Thread hijacking quotes genuine earlier correspondence, so thread depth, prior-reply count and topical coherence all vouch for the message. The user is expecting exactly this reply.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-IBAN",
+        "label": 1,
+        "family": "HP",
+        "title": "Invoice fraud: correct relationship, changed bank details",
+        "defeats": "sender history",
+        "rationale": "A real supplier, a real invoice number, a real amount, 47 prior messages -- and new payment details. The fraud is one changed fact inside an otherwise entirely genuine message.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-QR",
+        "label": 1,
+        "family": "HP",
+        "title": "QR-code phishing with no textual URL",
+        "defeats": "URL extraction",
+        "rationale": "The destination is encoded in an inline image, so URL extraction returns nothing. Detection has to fall back on sender provenance and the mismatch between an internal-sounding sender and an external domain.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      },
+      {
+        "case_id": "HP-SLOWDRIP",
+        "label": 1,
+        "family": "HP",
+        "title": "Low-volume spear phish with no urgency cues",
+        "defeats": "behavioural campaign signals",
+        "rationale": "One recipient, no burst, an aged domain, and deliberately relaxed wording -- 'no rush on this'. Every campaign-shaped behavioural feature is neutral, which is what a patient attacker buys with volume restraint.",
+        "tolerated": [
+          "BLOCK",
+          "REVIEW"
+        ]
+      }
+    ]
+  },
+  "adaptive_robustness": null
+}

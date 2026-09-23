@@ -1,0 +1,147 @@
+# Alerting rules.
+#
+# Each rule watches something that would actually change what an operator does.
+# Deliberately short: a rule nobody acts on trains people to ignore the ones
+# that matter.
+
+groups:
+  - name: phishguard-availability
+    rules:
+      - alert: PhishGuardDown
+        expr: up{job="phishguard-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PhishGuard API is not reachable"
+          description: >-
+            Prometheus cannot scrape the API. Inbound mail is not being
+            assessed. Check `docker compose logs api` and /readyz.
+
+      - alert: PhishGuardNoModelLoaded
+        expr: absent(phishguard_model_info) == 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PhishGuard is running without a model"
+          description: >-
+            The service is live but no model is registered, so every scan
+            returns 503. Run `phishguard train --save`.
+
+  - name: phishguard-latency
+    rules:
+      - alert: PhishGuardHighLatency
+        expr: >-
+          histogram_quantile(
+            0.95,
+            sum(rate(phishguard_scan_duration_ms_bucket[5m])) by (le)
+          ) > 150
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Assessment p95 latency above the 150 ms acceptance threshold"
+          description: >-
+            The inline mail path is slower than its budget, which causes queue
+            backlog at the gateway.
+
+  - name: phishguard-quality
+    rules:
+      # A sudden collapse in the blocked share usually means the model was
+      # replaced or the input shape changed, not that phishing stopped.
+      - alert: PhishGuardBlockRateCollapsed
+        expr: >-
+          sum(rate(phishguard_scans_total{band="BLOCK"}[30m]))
+          / clamp_min(sum(rate(phishguard_scans_total[30m])), 0.001) < 0.01
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Almost nothing is being blocked"
+          description: >-
+            The blocked share has fallen below 1% of traffic for 30 minutes.
+            Check that the intended model version is loaded and that callers are
+            still supplying full messages.
+
+      - alert: PhishGuardReviewQueueGrowing
+        expr: >-
+          sum(rate(phishguard_scans_total{band="REVIEW"}[15m]))
+          / clamp_min(sum(rate(phishguard_scans_total[15m])), 0.001) > 0.35
+        for: 20m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Over a third of traffic is being routed to analysts"
+          description: >-
+            Either the input distribution has shifted or the thresholds need
+            retuning. Sustained high review volume means analysts stop reading
+            the queue, which removes the human-oversight control.
+
+      - alert: PhishGuardBehaviouralContextMissing
+        expr: >-
+          sum(rate(phishguard_behavioral_context_total{available="false"}[30m]))
+          / clamp_min(sum(rate(phishguard_behavioral_context_total[30m])), 0.001) > 0.5
+        for: 30m
+        labels:
+          severity: info
+        annotations:
+          summary: "Most callers are not supplying behavioural context"
+          description: >-
+            The system is running on email and URL evidence only for the
+            majority of traffic, which the modality ablation shows is measurably
+            weaker. Check the gateway integration.
+
+  - name: phishguard-review-queue
+    rules:
+      # A REVIEW band is a promise that a person will look at the message.
+      # These two rules are how that promise is kept when nobody is watching
+      # the console.
+      - alert: PhishGuardCasesPastServiceLevel
+        expr: phishguard_queue_overdue > 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Review cases are waiting past their service level"
+          description: >-
+            {{ $value }} active case(s) have passed their SLA (P1 1 h, P2 4 h,
+            P3 24 h). Open the console's Review queue tab, sorted by priority.
+            A P1 case is a user report on mail the model delivered: it may be
+            a phish sitting in inboxes now.
+
+      - alert: PhishGuardReviewBacklog
+        expr: sum(phishguard_queue_depth{state=~"open|in_review|escalated"}) > 200
+        for: 30m
+        labels:
+          severity: info
+        annotations:
+          summary: "More than 200 cases are waiting for review"
+          description: >-
+            The queue is growing faster than it is worked. Either staff the
+            queue or revisit the thresholds (docs/09 §9.9): a queue nobody can
+            clear is not human oversight.
+
+  - name: phishguard-security
+    rules:
+      - alert: PhishGuardAuthFailureSpike
+        expr: sum(rate(phishguard_auth_failures_total[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Sustained authentication failures against the API"
+          description: >-
+            More than one rejected request per second for ten minutes. Either a
+            misconfigured client or credential probing.
+
+      - alert: PhishGuardAdversarialProbeEvasion
+        expr: increase(phishguard_adversarial_probes_total{evaded="true"}[1h]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "An adversarial probe succeeded in evading the detector"
+          description: >-
+            A security analyst demonstrated an evasion against the deployed
+            model. Capture the message, add it to the corpus and re-run the
+            evaluation before the next release.

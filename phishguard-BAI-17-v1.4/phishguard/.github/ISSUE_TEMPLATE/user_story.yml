@@ -1,0 +1,57 @@
+name: User story
+description: New behaviour, written from the point of view of the person who needs it
+title: "[story] "
+labels: ["type: story", "status: backlog"]
+body:
+  - type: dropdown
+    id: persona
+    attributes:
+      label: Who needs this
+      description: The personas are in docs/01 §1.3.
+      options:
+        - Recipient / reporter (Rohan)
+        - SOC analyst (Meera)
+        - Mail administrator (Arjun)
+        - CISO / risk owner (Kavita)
+        - Data protection officer
+        - Other (say who below)
+    validations:
+      required: true
+  - type: textarea
+    id: story
+    attributes:
+      label: Story
+      description: As a …, I want …, so that …
+      placeholder: As an analyst, I want to claim a case, so that no colleague works it at the same time.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checkable statements. Given / when / then works well. Name the test that will prove each one.
+      placeholder: |
+        - Given a case claimed by analyst A, when analyst B tries to resolve it, then the API returns 403.
+        - Test: test_a_second_analyst_cannot_steal_a_claimed_case
+    validations:
+      required: true
+  - type: dropdown
+    id: moscow
+    attributes:
+      label: Priority
+      options: ["Must have", "Should have", "Could have", "Will not have (this release)"]
+    validations:
+      required: true
+  - type: dropdown
+    id: points
+    attributes:
+      label: Estimate (story points, 1 point ≈ 2 hours)
+      options: ["1", "2", "3", "5", "8", "13"]
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Touches
+      options:
+        - label: The model, features, defences or attack suite (the evaluation must be re-run)
+        - label: Authentication, authorisation or what is stored (security review needed)
+        - label: The API contract (docs/03 must change)

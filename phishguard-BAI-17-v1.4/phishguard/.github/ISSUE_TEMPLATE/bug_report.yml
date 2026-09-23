@@ -1,0 +1,42 @@
+name: Bug report
+description: Something does not do what the documentation says
+title: "[bug] "
+labels: ["type: bug", "status: triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not report security vulnerabilities or detector evasions here** — see SECURITY.md.
+        Never paste real message content, API keys or personal data into an issue.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. python start.py
+        2. Open http://localhost:8000, connect with the analyst key
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `phishguard doctor`
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Version and model
+      description: From /healthz — the package version and model_version.
+      placeholder: 1.3.0, pg-xxxxxxxxxx
+  - type: input
+    id: request
+    attributes:
+      label: Request or trace id, if the problem is one request
+      placeholder: req_... or the trace id from the response

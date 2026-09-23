@@ -1,0 +1,47 @@
+{
+  "mode": "multi-process",
+  "explain": true,
+  "cpu_count": 2,
+  "levels": [
+    {
+      "processes": 1,
+      "concurrency": 1,
+      "requests": 150,
+      "succeeded": 150,
+      "errors": 0,
+      "error_kinds": {},
+      "seconds": 3.063,
+      "throughput_per_s": 49.0,
+      "mean_ms": 20.42,
+      "p50_ms": 19.35,
+      "p95_ms": 27.97,
+      "p99_ms": 41.61,
+      "max_ms": 47.62,
+      "speedup": 1.0
+    },
+    {
+      "processes": 2,
+      "concurrency": 2,
+      "requests": 300,
+      "succeeded": 300,
+      "errors": 0,
+      "error_kinds": {},
+      "seconds": 3.109,
+      "throughput_per_s": 96.5,
+      "mean_ms": 20.47,
+      "p50_ms": 19.55,
+      "p95_ms": 29.39,
+      "p99_ms": 36.37,
+      "max_ms": 54.92,
+      "speedup": 1.97
+    }
+  ],
+  "summary": {
+    "peak_throughput_per_s": 96.5,
+    "peak_throughput_concurrency": 2,
+    "max_concurrency_within_budget": 2,
+    "total_errors": 0,
+    "latency_budget_ms": 150.0
+  },
+  "note": "Each process is one server worker handling one request at a time, all sharing one SQLite audit database in WAL mode. Speed-up is throughput relative to one process; it is bounded by the number of CPU cores."
+}

@@ -1,0 +1,35 @@
+name: Experiment
+description: A measurement that could change a design decision
+title: "[exp] "
+labels: ["type: experiment", "status: backlog"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What decision does the answer inform?
+      placeholder: Does drawing training pools by campaign change PG-HARD silent delivery?
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Design
+      description: Arms, data, seeds, metric, and the command that runs it.
+      placeholder: |
+        Arms: row-level pools vs campaign pools. Data: synthetic(n=9000, seed=20260907).
+        Seeds: 3 per arm. Metric: PG-HARD silent delivery and false blocks.
+        Command: phishguard evaluate --n 9000 --seed-runs 2
+    validations:
+      required: true
+  - type: textarea
+    id: decision_rule
+    attributes:
+      label: What result would change the decision?
+      description: Write this before running it.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Result (fill in afterwards)

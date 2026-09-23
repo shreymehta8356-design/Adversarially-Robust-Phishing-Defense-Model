@@ -1,0 +1,58 @@
+# Secrets and local configuration ------------------------------------------
+# The acceptance gate forbids committing secrets or personal data; these lines
+# are the mechanical half of that promise and the CI secret scan is the other.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+api_keys.txt
+
+# Data and models ----------------------------------------------------------
+# Corpora may contain real recipients' addresses and are licensed individually.
+# Models and the audit database are build outputs, reproducible from the CLI.
+artifacts/
+data/
+*.mbox
+*.eml
+*.db
+*.db-wal
+*.db-shm
+*.joblib
+*.pkl
+*.onnx
+mlruns/
+
+# Python -------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.python-version
+
+# Tooling ------------------------------------------------------------------
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.hypothesis/
+
+# Editors and OS -----------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Notebooks ----------------------------------------------------------------
+.ipynb_checkpoints/

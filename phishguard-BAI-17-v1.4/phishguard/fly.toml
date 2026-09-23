@@ -1,0 +1,38 @@
+# Fly.io deployment (https://fly.io): `fly launch --copy-config --no-deploy`,
+# then `fly secrets set PG_ADMIN_KEY=... PG_ANALYST_KEY=... PG_REPORTER_KEY=... PG_PSEUDONYMIZATION_SALT=...`,
+# then `fly volumes create pgdata --size 1` and `fly deploy`.
+app = "phishguard"
+primary_region = "sin"
+
+[build]
+  dockerfile = "docker/api.Dockerfile"
+
+[env]
+  PG_ENVIRONMENT = "prod"
+  PG_BOOTSTRAP_N = "8000"
+  PG_API_WORKERS = "1"
+  PG_ARTIFACTS_DIR = "/data"
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "240s"
+  method = "GET"
+  path = "/healthz"
+
+[mounts]
+  source = "pgdata"
+  destination = "/data"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

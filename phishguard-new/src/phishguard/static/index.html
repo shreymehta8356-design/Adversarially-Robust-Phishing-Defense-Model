@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PhishGuard - Analyst Console</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #f0f2f5;
+    --border: #d9dee5;
+    --text: #16202c;
+    --text-dim: #5a6675;
+    --accent: #1f5fbf;
+    --accent-soft: #e8f0fc;
+    --allow: #1a7f4b;
+    --allow-soft: #e4f4ec;
+    --review: #a86a00;
+    --review-soft: #fdf1dd;
+    --block: #b3261e;
+    --block-soft: #fce9e8;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(16,24,40,.06), 0 4px 12px rgba(16,24,40,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10151b;
+      --surface: #171e26;
+      --surface-2: #1f2831;
+      --border: #2c3742;
+      --text: #e6ebf1;
+      --text-dim: #94a3b3;
+      --accent: #6aa5f5;
+      --accent-soft: #1a2635;
+      --allow: #4ac98a;
+      --allow-soft: #14261d;
+      --review: #e0a94a;
+      --review-soft: #2a2113;
+      --block: #f0736b;
+      --block-soft: #2c1717;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 14px/1.55 var(--sans); -webkit-font-smoothing: antialiased;
+  }
+  header {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 10px 20px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 650; font-size: 15px; }
+  .brand svg { width: 22px; height: 22px; }
+  .brand small { font-weight: 400; color: var(--text-dim); font-size: 12px; }
+  .spacer { flex: 1 1 auto; }
+  .keybox { display: flex; gap: 6px; align-items: center; }
+  input, textarea, select, button {
+    font: inherit; color: inherit; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface);
+    padding: 7px 10px;
+  }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  textarea { width: 100%; resize: vertical; font-family: var(--mono); font-size: 12.5px; }
+  button {
+    cursor: pointer; background: var(--surface-2); font-weight: 550;
+    transition: filter .12s ease;
+  }
+  button:hover:not(:disabled) { filter: brightness(0.97); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.ghost { background: transparent; }
+  button.sm { padding: 4px 9px; font-size: 12.5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); flex: none; }
+  .dot.ok { background: var(--allow); }
+  .dot.bad { background: var(--block); }
+
+  nav { display: flex; gap: 2px; padding: 0 20px; background: var(--surface);
+        border-bottom: 1px solid var(--border); overflow-x: auto; }
+  nav button {
+    border: none; background: none; border-radius: 0; padding: 10px 14px;
+    color: var(--text-dim); border-bottom: 2px solid transparent; white-space: nowrap;
+  }
+  nav button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main { padding: 20px; max-width: 1400px; margin: 0 auto; }
+  .grid { display: grid; gap: 16px; }
+  @media (min-width: 1000px) { .grid.two { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+  }
+  .card h2 { margin: 0 0 4px; font-size: 14px; letter-spacing: .01em; }
+  .card p.hint { margin: 0 0 12px; color: var(--text-dim); font-size: 12.5px; }
+  .row { display: grid; gap: 10px; }
+  @media (min-width: 620px) { .row.two { grid-template-columns: 1fr 1fr; } .row.three { grid-template-columns: 1fr 1fr 1fr; } }
+  label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 3px; font-weight: 550; }
+  label input[type=checkbox] { margin-right: 6px; vertical-align: -1px; }
+  fieldset { border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 0 0 12px; }
+  legend { font-size: 12px; color: var(--text-dim); padding: 0 6px; font-weight: 600; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+
+  .verdict { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .gauge { position: relative; width: 108px; height: 108px; flex: none; }
+  .gauge svg { transform: rotate(-90deg); }
+  .gauge .val {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: 22px; font-weight: 680; font-variant-numeric: tabular-nums;
+  }
+  .band {
+    display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px;
+    border-radius: 999px; font-weight: 680; font-size: 13px; letter-spacing: .03em;
+  }
+  .band.ALLOW { background: var(--allow-soft); color: var(--allow); }
+  .band.REVIEW { background: var(--review-soft); color: var(--review); }
+  .band.BLOCK { background: var(--block-soft); color: var(--block); }
+  .meta { color: var(--text-dim); font-size: 12.5px; margin-top: 6px; }
+  .meta code { font-family: var(--mono); font-size: 12px; }
+
+  ul.evidence { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 7px; }
+  ul.evidence li {
+    display: grid; grid-template-columns: 4px 1fr auto; gap: 11px; align-items: start;
+    padding: 9px 12px; background: var(--surface-2); border-radius: 8px;
+  }
+  ul.evidence .stripe { border-radius: 2px; align-self: stretch; background: var(--text-dim); }
+  ul.evidence li.phishing .stripe { background: var(--block); }
+  ul.evidence li.legitimate .stripe { background: var(--allow); }
+  ul.evidence .t { font-weight: 560; }
+  ul.evidence .d { color: var(--text-dim); font-size: 12.5px; margin-top: 2px; font-family: var(--mono); }
+  ul.evidence .w { font-variant-numeric: tabular-nums; color: var(--text-dim); font-size: 12px; }
+
+  .bars { display: grid; gap: 6px; margin-top: 12px; }
+  .bar { display: grid; grid-template-columns: 96px 1fr 48px; gap: 10px; align-items: center; font-size: 12.5px; }
+  .bar .track { height: 7px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+  .bar .fill { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+  .bar .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-dim); }
+  #timingBars .bar { grid-template-columns: 140px 1fr 64px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-dim); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; }
+  td.mono, .mono { font-family: var(--mono); font-size: 12px; }
+  .scroll { overflow-x: auto; }
+  .mini { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+  .mini td { padding: 3px 0; border-bottom: 1px solid var(--surface-2); }
+  .mini td:last-child { font-variant-numeric: tabular-nums; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 640; }
+  .pill.ALLOW { background: var(--allow-soft); color: var(--allow); }
+  .pill.REVIEW { background: var(--review-soft); color: var(--review); }
+  .pill.BLOCK { background: var(--block-soft); color: var(--block); }
+
+  .tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .tile { background: var(--surface-2); border-radius: 8px; padding: 12px 14px; }
+  .tile .k { color: var(--text-dim); font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; }
+  .tile .v { font-size: 22px; font-weight: 660; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+  .toast {
+    position: fixed; right: 18px; bottom: 18px; z-index: 50; max-width: 380px;
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 11px 14px; box-shadow: var(--shadow);
+  }
+  .toast.err { border-left-color: var(--block); }
+  .empty { color: var(--text-dim); padding: 22px; text-align: center; font-size: 13px; }
+  .kbd { font-family: var(--mono); font-size: 11px; background: var(--surface-2);
+         border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+  [hidden] { display: none !important; }
+  .traj { display: flex; gap: 3px; align-items: flex-end; height: 46px; margin-top: 10px; }
+  .traj i { flex: 1; background: var(--accent); border-radius: 2px 2px 0 0; min-height: 2px; }
+
+  /* review queue */
+  .prio { display: inline-block; min-width: 26px; text-align: center; padding: 2px 7px;
+          border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: var(--mono); }
+  .prio.p1 { background: var(--block-soft); color: var(--block); }
+  .prio.p2 { background: var(--review-soft); color: var(--review); }
+  .prio.p3 { background: var(--surface-2); color: var(--text-dim); }
+  .state { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11.5px;
+           font-weight: 640; background: var(--surface-2); color: var(--text-dim); }
+  .state.open { background: var(--accent-soft); color: var(--accent); }
+  .state.in_review { background: var(--review-soft); color: var(--review); }
+  .state.escalated { background: var(--block-soft); color: var(--block); }
+  .state.resolved { background: var(--allow-soft); color: var(--allow); }
+  .overdue { color: var(--block); font-weight: 650; }
+  #q-table tbody tr { cursor: pointer; }
+  #q-table td { white-space: nowrap; }
+  #q-table td.dom { max-width: 190px; overflow: hidden; text-overflow: ellipsis; }
+  #q-table tbody tr:hover td { background: var(--surface-2); }
+  #q-table tbody tr.sel td { background: var(--accent-soft); }
+  ol.timeline { list-style: none; margin: 10px 0 0; padding: 0 0 0 14px;
+                border-left: 2px solid var(--border); display: grid; gap: 9px; }
+  ol.timeline li { position: relative; font-size: 12.5px; }
+  ol.timeline li::before { content: ""; position: absolute; left: -20px; top: 5px; width: 10px;
+                           height: 10px; border-radius: 50%; background: var(--accent);
+                           border: 2px solid var(--surface); }
+  ol.timeline .who { color: var(--text-dim); font-family: var(--mono); font-size: 11.5px; }
+  .whoami { color: var(--text-dim); font-size: 12px; font-family: var(--mono); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M12 2.5 4 6v6c0 4.6 3.2 8.6 8 9.5 4.8-.9 8-4.9 8-9.5V6l-8-3.5Z"/>
+      <path d="m9 12 2 2 4-4"/>
+    </svg>
+    <span>PhishGuard <small>analyst console</small></span>
+  </div>
+  <div class="spacer"></div>
+  <span class="whoami" id="whoami"></span>
+  <div class="keybox">
+    <span class="dot" id="statusDot" title="not connected"></span>
+    <input id="apiKey" type="password" placeholder="X-API-Key" autocomplete="off"
+           style="width:230px" aria-label="API key">
+    <button class="sm" id="connectBtn">Connect</button>
+  </div>
+</header>
+
+<nav role="tablist">
+  <button role="tab" aria-selected="true" data-tab="scan">Assess a message</button>
+  <button role="tab" aria-selected="false" data-tab="queue">Review queue <span id="q-badge"></span></button>
+  <button role="tab" aria-selected="false" data-tab="history">Decision history</button>
+  <button role="tab" aria-selected="false" data-tab="probe">Adversarial probe</button>
+  <button role="tab" aria-selected="false" data-tab="bench">Hard-case benchmark</button>
+  <button role="tab" aria-selected="false" data-tab="model">Model &amp; monitoring</button>
+</nav>
+
+<main>
+  <!-- ------------------------------------------------------------ SCAN -->
+  <section id="tab-scan">
+    <div class="grid two">
+      <div class="card">
+        <h2>Message under assessment</h2>
+        <p class="hint">Paste a message, or load one of the worked examples. Behavioural
+          context is optional &mdash; leave it off to see how the verdict changes when the
+          gateway supplies no sender history.</p>
+
+        <fieldset>
+          <legend>Headers</legend>
+          <div class="row two">
+            <div><label for="f-sender">From</label>
+              <input id="f-sender" style="width:100%" placeholder="Name &lt;user@example.com&gt;"></div>
+            <div><label for="f-replyto">Reply-To</label>
+              <input id="f-replyto" style="width:100%" placeholder="(optional)"></div>
+          </div>
+          <div class="row three" style="margin-top:10px">
+            <div><label for="f-spf">SPF</label>
+              <select id="f-spf" style="width:100%"><option>pass</option><option>softfail</option><option>fail</option><option selected>none</option></select></div>
+            <div><label for="f-dkim">DKIM</label>
+              <select id="f-dkim" style="width:100%"><option>pass</option><option>fail</option><option selected>none</option></select></div>
+            <div><label for="f-dmarc">DMARC</label>
+              <select id="f-dmarc" style="width:100%"><option>pass</option><option>fail</option><option selected>none</option></select></div>
+          </div>
+        </fieldset>
+
+        <label for="f-subject">Subject</label>
+        <input id="f-subject" style="width:100%;margin-bottom:10px" placeholder="Subject line">
+
+        <label for="f-body">Body (plain text)</label>
+        <textarea id="f-body" rows="9" placeholder="Message body, including any URLs"></textarea>
+
+        <details style="margin-top:10px">
+          <summary style="cursor:pointer;color:var(--text-dim);font-size:12.5px">HTML part (optional)</summary>
+          <textarea id="f-html" rows="4" style="margin-top:8px"
+                    placeholder="&lt;html&gt;…&lt;/html&gt; — link text vs href mismatch is scored here"></textarea>
+        </details>
+
+        <fieldset style="margin-top:12px">
+          <legend>Behavioural context</legend>
+          <label><input type="checkbox" id="b-enabled" checked>
+            Gateway supplied sender history</label>
+          <div id="b-fields" class="row three" style="margin-top:10px">
+            <div><label for="b-prior">Prior messages from sender</label>
+              <input id="b-prior" type="number" value="0" min="0" style="width:100%"></div>
+            <div><label for="b-age">Sender domain age (days)</label>
+              <input id="b-age" type="number" value="5" min="0" style="width:100%"></div>
+            <div><label for="b-burst">Messages from domain, last hour</label>
+              <input id="b-burst" type="number" value="150" min="0" style="width:100%"></div>
+            <div><label for="b-hour">Hour received (local)</label>
+              <input id="b-hour" type="number" value="3" min="0" max="23" style="width:100%"></div>
+            <div><label for="b-recip">Recipients</label>
+              <input id="b-recip" type="number" value="1" min="0" style="width:100%"></div>
+            <div><label for="b-alias">Addresses using this display name</label>
+              <input id="b-alias" type="number" value="4" min="1" style="width:100%"></div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button class="primary" id="scanBtn">Assess message</button>
+          <button id="compareBtn" title="Score the same message with a conventional text-only filter">Compare with a text-only filter</button>
+          <select id="sampleSelect" title="Load a worked example">
+            <option value="">Load an example…</option>
+            <option value="credential">Credential phishing (obvious)</option>
+            <option value="clone">Cloned brand template (hard)</option>
+            <option value="bec">Business email compromise (no link)</option>
+            <option value="ham">Legitimate internal mail</option>
+            <option value="hardham">Legitimate password reset (hard negative)</option>
+            <option value="obf">Obfuscated with homoglyphs</option>
+            <option value="compromised">Compromised internal account (hard)</option>
+            <option value="callback">Callback phishing &mdash; no link at all (hard)</option>
+            <option value="trusted">Credential page on a trusted platform (hard)</option>
+            <option value="espham">Legitimate mail behind a click-tracker (hard negative)</option>
+            <option value="listham">Legitimate list mail failing DMARC (hard negative)</option>
+          </select>
+          <span style="color:var(--text-dim);font-size:12px">
+            <span class="kbd">Ctrl</span>+<span class="kbd">Enter</span> to assess</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" id="verdictCard">
+          <h2>Verdict</h2>
+          <div id="verdictEmpty" class="empty">No assessment yet.</div>
+          <div id="verdictBody" hidden>
+            <div class="verdict">
+              <div class="gauge">
+                <svg width="108" height="108" viewBox="0 0 108 108">
+                  <circle cx="54" cy="54" r="46" fill="none" stroke="var(--surface-2)" stroke-width="11"/>
+                  <circle id="gaugeArc" cx="54" cy="54" r="46" fill="none" stroke="var(--accent)"
+                          stroke-width="11" stroke-linecap="round"
+                          stroke-dasharray="289" stroke-dashoffset="289"/>
+                </svg>
+                <div class="val" id="scoreVal">—</div>
+              </div>
+              <div>
+                <span class="band" id="bandPill">—</span>
+                <div class="meta" id="verdictMeta"></div>
+              </div>
+            </div>
+            <div class="bars" id="memberBars"></div>
+            <ul class="evidence" id="evidenceList"></ul>
+            <details id="timingBox" style="margin-top:12px" hidden>
+              <summary style="cursor:pointer;color:var(--text-dim);font-size:12.5px">Where the time went</summary>
+              <div class="bars" id="timingBars"></div>
+              <p class="meta" id="traceMeta"></p>
+            </details>
+            <div class="actions" id="feedbackRow">
+              <span style="color:var(--text-dim);font-size:12.5px">Analyst decision:</span>
+              <button class="sm" data-fb="phishing">Confirm phishing</button>
+              <button class="sm" data-fb="legitimate">Mark legitimate</button>
+              <button class="sm" data-fb="unsure">Unsure</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="compareCard" hidden style="margin-top:16px">
+          <h2>Side by side</h2>
+          <p class="hint">The same message, read two ways. A content-only filter
+            sees only the words &mdash; which, in a cloned template, are the
+            brand&rsquo;s own.</p>
+          <div id="compareBody"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- BENCHMARK -->
+  <section id="tab-bench" hidden>
+    <div class="card">
+      <h2>PG-HARD &mdash; the number that is not inflated by easy mail</h2>
+      <p class="hint">
+        Aggregate accuracy on a representative corpus is dominated by its easy
+        majority. PG-HARD is the counterweight: every record is hard by
+        construction, and every case names the detection cue it inverts.
+      </p>
+      <div id="benchStatus" class="empty">Connect to load.</div>
+      <div id="benchBody" hidden>
+        <div class="tiles" id="benchTiles"></div>
+        <h2 style="margin-top:18px">Headline</h2>
+        <p class="hint">All three systems tuned to the same false-alarm budget
+          on ordinary mail before being measured here.</p>
+        <div class="scroll"><table id="benchSystems">
+          <thead><tr><th>System</th><th>Silent delivery</th><th>False block</th>
+            <th>Acceptable</th><th>Sent to a human</th></tr></thead>
+          <tbody></tbody></table></div>
+
+        <h2 style="margin-top:18px">Where the system is weakest</h2>
+        <p class="hint">Grouped by the cue each case defeats.</p>
+        <div class="scroll"><table id="benchSignals">
+          <thead><tr><th>Defeated cue</th><th>Cases</th><th>Records</th>
+            <th>Pass rate</th></tr></thead><tbody></tbody></table></div>
+
+        <h2 style="margin-top:18px">Case by case</h2>
+        <p class="hint">Worst score is the variant that came closest to failing.</p>
+        <div class="scroll"><table id="benchCases">
+          <thead><tr><th>Case</th><th>Label</th><th>Defeats</th><th>Mean</th>
+            <th>Worst</th><th>Pass</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- QUEUE -->
+  <section id="tab-queue" hidden>
+    <div class="tiles" id="q-tiles" style="margin-bottom:16px"></div>
+    <div class="grid two">
+      <div class="card">
+        <h2>Review queue</h2>
+        <p class="hint">Every REVIEW decision and every user report becomes a case. Claim one to
+          own it; only its owner or an admin can resolve it. Ordered by priority, then age.</p>
+        <div class="actions" style="margin-top:0;margin-bottom:12px">
+          <select id="q-state" aria-label="Case state">
+            <option value="active">Active (open, in review, escalated)</option>
+            <option value="open">Open</option>
+            <option value="in_review">In review</option>
+            <option value="escalated">Escalated</option>
+            <option value="resolved">Resolved</option>
+            <option value="all">All</option>
+          </select>
+          <button class="sm" id="q-refresh">Refresh</button>
+          <span id="q-total" class="meta" style="margin:0"></span>
+        </div>
+        <div class="scroll"><table id="q-table">
+          <thead><tr><th>Pri</th><th>State</th><th>Waiting</th><th>Due</th><th>Origin</th>
+            <th>Model</th><th>Sender domain</th></tr></thead>
+          <tbody><tr><td colspan="7" class="empty">Connect with an analyst key.</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card" id="q-detail">
+        <h2>Case</h2>
+        <div class="empty">Pick a case from the queue.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------- HISTORY -->
+  <section id="tab-history" hidden>
+    <div class="card">
+      <h2>Decision history</h2>
+      <p class="hint">The audit trail. No message content is stored &mdash; only a salted
+        digest of the subject, a pseudonymised sender, the domain, sizes and the verdict.
+        Requires the <code>admin</code> role.</p>
+      <div class="actions" style="margin-top:0;margin-bottom:12px">
+        <select id="h-band"><option value="">All bands</option><option>ALLOW</option><option>REVIEW</option><option>BLOCK</option></select>
+        <input id="h-domain" placeholder="sender domain" style="width:200px">
+        <button class="sm" id="h-refresh">Refresh</button>
+        <span id="h-total" style="color:var(--text-dim);font-size:12.5px"></span>
+      </div>
+      <div class="scroll"><table id="h-table">
+        <thead><tr><th>Time</th><th>Band</th><th>Score</th><th>Sender domain</th>
+          <th>Sender</th><th>Evidence</th><th>Feedback</th></tr></thead>
+        <tbody><tr><td colspan="7" class="empty">Connect with an admin key and refresh.</td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- PROBE -->
+  <section id="tab-probe" hidden>
+    <div class="card">
+      <h2>Adversarial probe</h2>
+      <p class="hint">Runs the budgeted attack suite against the message currently in the
+        assessment tab: would this get through if the attacker tried harder? Admin only,
+        because it tells the caller which edits reduce the score.</p>
+      <div class="actions" style="margin-top:0">
+        <label for="p-budget" style="margin:0">Query budget</label>
+        <input id="p-budget" type="number" value="10" min="1" max="40" style="width:80px">
+        <button class="primary" id="probeBtn">Run probe</button>
+      </div>
+      <div id="probeResult" hidden style="margin-top:16px">
+        <div class="tiles">
+          <div class="tile"><div class="k">Original score</div><div class="v" id="p-orig">—</div></div>
+          <div class="tile"><div class="k">After attack</div><div class="v" id="p-final">—</div></div>
+          <div class="tile"><div class="k">Queries used</div><div class="v" id="p-queries">—</div></div>
+          <div class="tile"><div class="k">Outcome</div><div class="v" id="p-evaded">—</div></div>
+        </div>
+        <div class="traj" id="p-traj"></div>
+        <p style="margin:12px 0 0" id="p-interp"></p>
+        <p class="mono" style="color:var(--text-dim);margin:8px 0 0" id="p-steps"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- MODEL -->
+  <section id="tab-model" hidden>
+    <div class="grid two">
+      <div class="card">
+        <h2>Operational summary</h2>
+        <p class="hint">Last 24 hours, from the audit trail.</p>
+        <div class="tiles" id="statTiles"><div class="empty">Connect to load.</div></div>
+        <h2 style="margin-top:18px">Score distribution</h2>
+        <p class="hint">A shift here is the earliest available drift signal.</p>
+        <div class="traj" id="scoreDist" style="height:64px"></div>
+      </div>
+      <div class="card">
+        <h2>Model</h2>
+        <div id="modelInfo"><div class="empty">Connect to load.</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;justify-content:space-between">
+        <div>
+          <h2>Drift against the training reference</h2>
+          <p class="hint" style="margin-bottom:0">Recent decisions compared with the legitimate mail this model was
+            calibrated on. Uses only the audit trail's content-free columns, never message text.</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <div>
+            <label for="driftWindow">Window</label>
+            <select id="driftWindow">
+              <option value="24">Last 24 hours</option>
+              <option value="168">Last 7 days</option>
+              <option value="720">Last 30 days</option>
+            </select>
+          </div>
+          <button type="button" id="driftBtn">Check drift</button>
+        </div>
+      </div>
+      <div id="driftOut" style="margin-top:14px"><div class="empty">Connect to load.</div></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2>Defensive controls and attack taxonomy</h2>
+      <p class="hint">What the system defends against, and with what.</p>
+      <div class="scroll"><table id="taxTable">
+        <thead><tr><th>ID</th><th>Attack family</th><th>Attacker capability</th>
+          <th>Cost</th><th>Countered by</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const state = { key: "", lastDecisionId: null, connected: false };
+
+  // Convenience only; wrapped because storage can throw in restricted contexts.
+  try { state.key = sessionStorage.getItem("pg_key") || ""; } catch (_) {}
+  if (state.key) $("apiKey").value = state.key;
+
+  function toast(msg, isError) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.className = "toast" + (isError ? " err" : "");
+    t.hidden = false;
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { t.hidden = true; }, 4200);
+  }
+
+  async function api(path, options = {}) {
+    const headers = Object.assign({ "Content-Type": "application/json" }, options.headers || {});
+    if (state.key) headers["X-API-Key"] = state.key;
+    let res;
+    try {
+      res = await fetch(path, Object.assign({}, options, { headers }));
+    } catch (e) {
+      throw new Error("Cannot reach the API. Is the service running?");
+    }
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch (_) { data = { detail: text }; }
+    if (!res.ok) {
+      const detail = (data && (data.detail || data.error)) || res.statusText;
+      throw new Error(`${res.status} — ${detail}`);
+    }
+    return data;
+  }
+
+  function setConnected(ok, label) {
+    state.connected = ok;
+    const dot = $("statusDot");
+    dot.className = "dot " + (ok ? "ok" : "bad");
+    dot.title = label || (ok ? "connected" : "not connected");
+  }
+
+  // -------------------------------------------------------------- tabs
+  document.querySelectorAll("nav button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("nav button").forEach((b) =>
+        b.setAttribute("aria-selected", String(b === btn)));
+      ["scan", "queue", "history", "probe", "bench", "model"].forEach((name) => {
+        $("tab-" + name).hidden = name !== btn.dataset.tab;
+      });
+      if (btn.dataset.tab === "queue" && state.connected) loadQueue();
+      if (btn.dataset.tab === "model" && state.connected) loadModel();
+      if (btn.dataset.tab === "history" && state.connected) loadHistory();
+      if (btn.dataset.tab === "bench" && state.connected) loadBenchmark();
+    });
+  });
+
+  // ------------------------------------------------------------ connect
+  $("connectBtn").addEventListener("click", connect);
+  $("apiKey").addEventListener("keydown", (e) => { if (e.key === "Enter") connect(); });
+
+  async function connect() {
+    state.key = $("apiKey").value.trim();
+    try { sessionStorage.setItem("pg_key", state.key); } catch (_) {}
+    try {
+      const health = await api("/healthz");
+      if (!health.model_loaded) {
+        setConnected(false, "no model loaded");
+        toast("Service is up but no model is loaded. Run: phishguard train --save", true);
+        return;
+      }
+      const me = await api("/api/v1/whoami");
+      state.whoami = me;
+      $("whoami").textContent = me.role + " \u00b7 " + me.key_id;
+      if (me.role === "reporter") {
+        setConnected(true, "reporter key");
+        toast("This is an email-user (reporter) key. Report suspicious mail at /report.", false);
+        return;
+      }
+      await api("/api/v1/model");
+      setConnected(true, "connected as " + health.model_version);
+      toast("Connected as " + me.role + ". Model " + health.model_version);
+      refreshQueueBadge();
+    } catch (err) {
+      setConnected(false, String(err.message));
+      toast(err.message, true);
+    }
+  }
+
+  // -------------------------------------------------------- review queue
+  const ORIGIN = { model_review: "Model held it", user_report: "User report" };
+  const ORIGIN_SHORT = { model_review: "Model", user_report: "User" };
+  const ACTION_LABEL = {
+    "claim": "Claim", "unclaim": "Release claim", "escalate": "Escalate",
+    "resolve:confirmed_phishing": "Confirm phishing", "resolve:released": "Release to inbox",
+    "reopen": "Reopen", "comment": "Add note",
+  };
+  const NEEDS_NOTE = new Set(["escalate", "resolve:released", "reopen", "comment"]);
+  state.caseId = null;
+
+  function ago(seconds) {
+    const s = Math.max(0, Math.round(seconds));
+    if (s < 90) return s + " s";
+    if (s < 5400) return Math.round(s / 60) + " min";
+    if (s < 172800) return (s / 3600).toFixed(1).replace(/\.0$/, "") + " h";
+    return Math.round(s / 86400) + " d";
+  }
+
+  function dueIn(iso, overdue) {
+    if (!iso) return "";
+    const secs = (new Date(iso).getTime() - Date.now()) / 1000;
+    return overdue ? `<span class="overdue">overdue ${esc(ago(-secs))}</span>` : "in " + esc(ago(secs));
+  }
+
+  async function refreshQueueBadge() {
+    try {
+      const st = await api("/api/v1/cases/stats");
+      const active = st.by_state.open + st.by_state.in_review + st.by_state.escalated;
+      $("q-badge").innerHTML = active ? `<span class="pill REVIEW">${active}</span>` : "";
+      return st;
+    } catch (_) { return null; }
+  }
+
+  async function loadQueue() {
+    const st = await refreshQueueBadge();
+    if (st) {
+      const med = (v) => (v == null ? "\u2014" : ago(v));
+      const tiles = [
+        ["Open", st.by_state.open], ["In review", st.by_state.in_review],
+        ["Escalated", st.by_state.escalated], ["Overdue", st.overdue],
+        ["Median time to resolve", med(st.median_seconds_to_resolve)],
+        ["Resolved within SLA", st.resolved_within_sla == null ? "\u2014" : Math.round(st.resolved_within_sla * 100) + "%"],
+      ];
+      $("q-tiles").innerHTML = tiles.map(([k, v]) =>
+        `<div class="tile"><div class="k">${esc(k)}</div><div class="v">${esc(String(v))}</div></div>`).join("");
+    }
+    const tbody = $("q-table").querySelector("tbody");
+    try {
+      const page = await api("/api/v1/cases?limit=200&state=" + encodeURIComponent($("q-state").value));
+      $("q-total").textContent = page.total + " case" + (page.total === 1 ? "" : "s");
+      if (!page.cases.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty">Nothing waiting. Cases appear here when the model holds a message for review or a user reports one.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = "";
+      page.cases.forEach((c) => {
+        const tr = document.createElement("tr");
+        if (c.case_id === state.caseId) tr.className = "sel";
+        tr.innerHTML = `
+          <td><span class="prio p${c.priority}">P${c.priority}</span></td>
+          <td><span class="state ${esc(c.state)}">${esc(c.state.replace("_", " "))}</span></td>
+          <td>${esc(ago(c.age_seconds))}</td>
+          <td>${c.state === "resolved" ? "\u2014" : dueIn(c.sla_due_at, c.overdue)}</td>
+          <td title="${esc(ORIGIN[c.origin] || c.origin)}">${esc(ORIGIN_SHORT[c.origin] || c.origin)}</td>
+          <td><span class="pill ${esc(c.band)}">${esc(c.band)}</span> <span class="mono">${Number(c.score).toFixed(2)}</span></td>
+          <td class="mono dom" title="${esc(c.sender_domain || "")}">${esc(c.sender_domain || "\u2014")}</td>`;
+        tr.addEventListener("click", () => openCase(c.case_id));
+        tbody.appendChild(tr);
+      });
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">${esc(err.message)}</td></tr>`;
+    }
+  }
+  $("q-refresh").addEventListener("click", loadQueue);
+  $("q-state").addEventListener("change", loadQueue);
+
+  async function openCase(caseId) {
+    state.caseId = caseId;
+    document.querySelectorAll("#q-table tbody tr").forEach((tr) => tr.classList.remove("sel"));
+    const box = $("q-detail");
+    try {
+      renderCase(await api("/api/v1/cases/" + encodeURIComponent(caseId)));
+    } catch (err) {
+      box.innerHTML = `<h2>Case</h2><div class="empty">${esc(err.message)}</div>`;
+    }
+  }
+
+  function renderCase(c) {
+    const me = state.whoami ? state.whoami.key_id : "";
+    const owner = c.assignee ? (c.assignee === me ? "you" : c.assignee) : "nobody";
+    const members = Object.entries(c.member_scores || {}).map(([k, v]) =>
+      `<tr><td class="mono">${esc(k)}</td><td>${Number(v).toFixed(2)}</td></tr>`).join("");
+    const events = (c.events || []).map((e) => `
+      <li><b>${esc(e.action)}</b>${e.to_state && e.from_state !== e.to_state ? " \u2192 " + esc(e.to_state.replace("_", " ")) : ""}
+        <div class="who">${esc(e.at.replace("T", " ").slice(0, 19))} \u00b7 ${esc(e.actor === me ? "you" : e.actor)} (${esc(e.actor_role)})</div>
+        ${e.note ? `<div>${esc(e.note)}</div>` : ""}</li>`).join("");
+    const buttons = (c.allowed_actions || []).map((a) =>
+      `<button class="sm ${a === "resolve:confirmed_phishing" ? "primary" : ""}" data-act="${esc(a)}">${esc(ACTION_LABEL[a] || a)}</button>`).join("");
+    $("q-detail").innerHTML = `
+      <h2 style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span class="prio p${c.priority}">P${c.priority}</span>
+        <span class="mono">${esc(c.case_id)}</span>
+        <span class="state ${esc(c.state)}">${esc(c.state.replace("_", " "))}</span>
+        ${c.resolution ? `<span class="pill ${c.resolution === "released" ? "ALLOW" : "BLOCK"}">${esc(c.resolution.replace("_", " "))}</span>` : ""}
+      </h2>
+      <p class="meta" style="margin:0 0 10px">${esc(ORIGIN[c.origin] || c.origin)}${c.report_category ? " (" + esc(c.report_category.replace("_", " ")) + ")" : ""}
+        \u00b7 waiting ${esc(ago(c.age_seconds))} \u00b7 ${c.state === "resolved" ? "resolved" : "due " + dueIn(c.sla_due_at, c.overdue)}
+        \u00b7 owner: <b>${esc(owner)}</b></p>
+      <div class="verdict" style="gap:10px">
+        <span class="band ${esc(c.band)}">${esc(c.band)}</span>
+        <span>score <b class="mono">${Number(c.score).toFixed(3)}</b></span>
+        <span class="meta" style="margin:0">sender domain <code>${esc(c.sender_domain || "\u2014")}</code></span>
+      </div>
+      ${(c.top_evidence || []).length ? `<ul class="evidence">${c.top_evidence.map((t) =>
+        `<li><span class="stripe"></span><div class="t">${esc(t)}</div><span></span></li>`).join("")}</ul>` : ""}
+      <table class="mini" style="margin-top:12px">${members}</table>
+      <label for="q-note" style="margin-top:14px">Note (required to escalate, release or reopen &mdash; never paste message content)</label>
+      <textarea id="q-note" rows="2" maxlength="1000" style="font-family:var(--sans)"></textarea>
+      <div class="actions">${buttons || '<span class="meta">No actions available to you on this case.</span>'}</div>
+      <h2 style="margin-top:16px">History</h2>
+      <ol class="timeline">${events}</ol>
+      <p class="meta">Trace <code>${esc(c.trace_id || "\u2014")}</code> \u00b7 decision <code>${esc(c.decision_id)}</code></p>`;
+    $("q-detail").querySelectorAll("button[data-act]").forEach((b) =>
+      b.addEventListener("click", () => caseAction(c.case_id, b.dataset.act)));
+  }
+
+  async function caseAction(caseId, act) {
+    const note = ($("q-note") && $("q-note").value.trim()) || "";
+    if (NEEDS_NOTE.has(act) && !note) { toast("Add a note first: this action needs a reason.", true); return; }
+    const [action, resolution] = act.split(":");
+    try {
+      const c = await api("/api/v1/cases/" + encodeURIComponent(caseId) + "/actions", {
+        method: "POST", body: JSON.stringify({ action, resolution: resolution || null, note }),
+      });
+      toast((ACTION_LABEL[act] || act) + " \u2014 done");
+      renderCase(c);
+      loadQueue();
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // --------------------------------------------------------------- scan
+  const SAMPLES = {
+    compromised: {
+      subject: "Shared: Q3 headcount plan",
+      sender: "Priya Sharma <priya.sharma@northgate-industries.example>",
+      replyto: "",
+      body: "Hi,\n\nSharing the headcount plan ahead of Monday. You will need to sign in with your work account to open it.\n\nhttps://forms.gle/n4k2mx8qe7vd1p\n\nThanks,\nPriya",
+      html: "",
+      auth: ["pass", "pass", "pass"],
+      beh: { prior: 318, age: 4100, burst: 46, hour: 10, recip: 46, alias: 1 },
+    },
+    callback: {
+      subject: "Subscription renewal confirmation",
+      sender: "Microsoft Billing <billing@microsoft-orders.example>",
+      replyto: "",
+      body: "Thank you for renewing Microsoft 365 Premium.\n\nOrder reference: 44170\nAmount charged: 17,930.50\nThis amount will appear on your statement within 48 hours.\n\nDid not authorise this renewal? Our billing team can cancel it and refund the charge. Call +1 (888) 555-0164 within 24 hours; cancellations cannot be processed by email.\n\nMicrosoft Billing",
+      html: "",
+      auth: ["pass", "none", "none"],
+      beh: { prior: 0, age: 38, burst: 140, hour: 11, recip: 1, alias: 1 },
+    },
+    trusted: {
+      subject: "Microsoft 365: storage quota exceeded",
+      sender: "Microsoft Admin <admin@microsoft-notices.example>",
+      replyto: "",
+      body: "Your mailbox has reached its storage limit and new mail is being held.\n\nRequest additional storage: https://storage.googleapis.com/forms/8fj2kd91mzq0\n\nHeld messages are released once the request is approved.\n\nMicrosoft administration",
+      html: "",
+      auth: ["pass", "none", "none"],
+      beh: { prior: 0, age: 61, burst: 8, hour: 11, recip: 1, alias: 1 },
+    },
+    espham: {
+      subject: "Your Adobe Acrobat Sign sign-in code",
+      sender: "Adobe <no-reply@adobe.com>",
+      replyto: "",
+      body: "Hello,\n\nUse this link to finish signing in to Adobe Acrobat Sign. It expires in 10 minutes and can be used once.\n\nhttps://u2731456.ct.sendgrid.net/ls/click?upn=8fj2kd91mzq0\n\nIf you did not try to sign in you can ignore this message.\n\nThe Adobe account team",
+      html: "",
+      auth: ["pass", "pass", "pass"],
+      beh: { prior: 41, age: 9200, burst: 12, hour: 15, recip: 1, alias: 1 },
+    },
+    listham: {
+      subject: "Re: [logistics-wg] draft schema for shipment events",
+      sender: "Daniel Okafor via logistics-wg <logistics-wg@lists.logistics-wg.example>",
+      replyto: "daniel.okafor@northgate-industries.example",
+      body: "On Tuesday you wrote:\n> should carrier_id be nullable for first-mile legs?\n\nI would keep it non-null and use a sentinel carrier for first-mile. Nullable columns in that position have caused us two outages already.\n\nDraft is here if anyone wants to comment:\nhttps://lists.logistics-wg.example/archive/kd82hslapq9\n\nDaniel Okafor",
+      html: "",
+      auth: ["fail", "fail", "fail"],
+      beh: { prior: 140, age: 3400, burst: 6, hour: 14, recip: 210, alias: 1 },
+    },
+    credential: {
+      subject: "URGENT: Your Microsoft 365 account will be suspended",
+      sender: "Microsoft 365 Security <security@microsoft-verify-9f2x.tk>",
+      replyto: "recovery.team@mail.ru",
+      body: "Dear Customer,\n\nWe have detected unauthorized access attempts on your Microsoft 365 account. For your security your account has been temporarily limited.\n\nYou must verify your identity within 24 hours or your account will be permanently closed.\n\nVerify now: http://microsoft-verify-9f2x.tk/account/login?id=r8fj29dkq1\n\nFailure to comply will result in permanent suspension.\n\nMicrosoft Security Team",
+      html: '<html><body><p>Dear Customer,</p><a href="http://microsoft-verify-9f2x.tk/account/login">https://login.microsoftonline.com/</a><form><input type="password" name="pass"></form></body></html>',
+      auth: ["fail", "none", "fail"],
+      beh: { prior: 0, age: 4, burst: 220, hour: 3, recip: 1, alias: 6 },
+    },
+    clone: {
+      subject: "Reset your PayPal password",
+      sender: "PayPal <no-reply@paypal-secure-mail.com>",
+      replyto: "",
+      body: "We received a request to reset the password for your PayPal account.\n\nReset it here: https://paypal-secure-mail.com/account/reset?token=8fj2kd91mzq0\n\nThe link expires in 30 minutes. If you did not request this, no action is needed and your password will not change.\n\nhttps://www.paypal.com/privacy\nhttps://www.paypal.com/contact",
+      html: "",
+      auth: ["pass", "pass", "pass"],
+      beh: { prior: 0, age: 41, burst: 34, hour: 14, recip: 1, alias: 2 },
+    },
+    bec: {
+      subject: "Quick question",
+      sender: "Sarah Whitfield <s.whitfield@northgate-industrles.example>",
+      replyto: "s.whitfield.acc@gmail.com",
+      body: "Hi,\n\nAre you at your desk?\n\nThere's a payment that has to go out today and I can't get to a laptop.\n\nLet me know when you have a moment and I'll send the details.\n\nSarah Whitfield\nSent from my phone",
+      html: "",
+      auth: ["pass", "none", "fail"],
+      beh: { prior: 0, age: 12, burst: 1, hour: 11, recip: 1, alias: 3 },
+    },
+    ham: {
+      subject: "Weekly status - Warehouse",
+      sender: "Priya Sharma <priya.sharma@northgate-industries.example>",
+      replyto: "",
+      body: "Status for this week:\n\nDone: supplier list verified, staging backfill completed.\nIn progress: reconciliation report.\nBlocked: waiting on the partner API key.\n\nRisks: the backfill window is tight if we slip past Thursday.\n\nThanks,\nPriya Sharma",
+      html: "",
+      auth: ["pass", "pass", "pass"],
+      beh: { prior: 84, age: 3200, burst: 2, hour: 10, recip: 3, alias: 1 },
+    },
+    hardham: {
+      subject: "Reset your Dropbox password",
+      sender: "Dropbox <no-reply@dropbox.com>",
+      replyto: "",
+      body: "Someone asked to reset your Dropbox password. If it was you, use the link below within 30 minutes:\n\nhttps://www.dropbox.com/account/reset?token=k38fj29dkq1mz\n\nIf it wasn't you, you can ignore this message - nothing has changed on your account.",
+      html: "",
+      auth: ["pass", "pass", "pass"],
+      beh: { prior: 26, age: 6800, burst: 12, hour: 15, recip: 1, alias: 1 },
+    },
+    obf: {
+      subject: "Аccount Verificаtion Requіred",
+      sender: "Support <no-reply@secure-id-8kd2.xyz>",
+      replyto: "",
+      body: "Dear Customer,\n\nYour аccount access has been rest​ricted. Please con firm your p4ssw0rd to restore service.\n\nhttps://secure-id-8kd2.xyz/auth/session?id=8fj29dkq\n\nThis must be completed within 24 hours.",
+      html: "",
+      auth: ["softfail", "none", "fail"],
+      beh: { prior: 0, age: 2, burst: 310, hour: 2, recip: 1, alias: 5 },
+    },
+  };
+
+  $("sampleSelect").addEventListener("change", (e) => {
+    const s = SAMPLES[e.target.value];
+    if (!s) return;
+    $("f-subject").value = s.subject;
+    $("f-sender").value = s.sender;
+    $("f-replyto").value = s.replyto;
+    $("f-body").value = s.body;
+    $("f-html").value = s.html;
+    $("f-spf").value = s.auth[0]; $("f-dkim").value = s.auth[1]; $("f-dmarc").value = s.auth[2];
+    $("b-enabled").checked = true; $("b-fields").style.opacity = "1";
+    $("b-prior").value = s.beh.prior; $("b-age").value = s.beh.age;
+    $("b-burst").value = s.beh.burst; $("b-hour").value = s.beh.hour;
+    $("b-recip").value = s.beh.recip; $("b-alias").value = s.beh.alias;
+    e.target.value = "";
+  });
+
+  $("b-enabled").addEventListener("change", (e) => {
+    $("b-fields").style.opacity = e.target.checked ? "1" : "0.4";
+    $("b-fields").querySelectorAll("input").forEach((i) => { i.disabled = !e.target.checked; });
+  });
+
+  function buildRequest() {
+    const payload = {
+      subject: $("f-subject").value,
+      body: $("f-body").value,
+      html_body: $("f-html").value,
+      sender: $("f-sender").value,
+      reply_to: $("f-replyto").value,
+      to: [],
+      auth: { spf: $("f-spf").value, dkim: $("f-dkim").value, dmarc: $("f-dmarc").value },
+      client_reference: "console",
+    };
+    if ($("b-enabled").checked) {
+      const prior = Number($("b-prior").value) || 0;
+      payload.behavioral = {
+        sender_first_seen: prior === 0,
+        prior_messages_from_sender: prior,
+        prior_replies_to_sender: Math.min(prior, Math.floor(prior / 2)),
+        thread_depth: /^re:/i.test($("f-subject").value) ? 2 : 0,
+        hour_local: Math.min(23, Math.max(0, Number($("b-hour").value) || 12)),
+        is_weekend: false,
+        recipient_count: Number($("b-recip").value) || 1,
+        bcc_count: 0,
+        external_sender: true,
+        domain_report_count: 0,
+        domain_click_rate: 0,
+        burst_count_1h: Number($("b-burst").value) || 1,
+        display_name_alias_count: Number($("b-alias").value) || 1,
+        domain_age_days: Number($("b-age").value) || 0,
+      };
+    }
+    return payload;
+  }
+
+  $("scanBtn").addEventListener("click", doScan);
+
+  // ------------------------------------------------- side-by-side compare
+  $("compareBtn").addEventListener("click", async () => {
+    const btn = $("compareBtn");
+    btn.disabled = true;
+    const was = btn.textContent;
+    btn.textContent = "Comparing\u2026";
+    try {
+      const out = await api("/api/v1/compare", {
+        method: "POST", body: JSON.stringify(buildRequest()),
+      });
+      renderCompare(out);
+    } catch (e) {
+      toast(e.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = was;
+    }
+  });
+
+  function renderCompare(out) {
+    const pg = out.phishguard, tx = out.text_only;
+    const members = Object.entries(pg.member_scores || {})
+      .map(([k, v]) => `<tr><td><code>${esc(k)}</code></td>` +
+        `<td style="text-align:right">${v.toFixed(3)}</td></tr>`).join("");
+
+    // The interesting outcome is not "who scored higher" but whether the
+    // text-only column committed to a confident answer that is wrong.
+    let verdictLine = "";
+    if (tx.band === "ALLOW" && pg.band !== "ALLOW") {
+      verdictLine = "The text-only filter would have delivered this message " +
+        "with no warning.";
+    } else if (tx.band === "BLOCK" && pg.band === "ALLOW") {
+      verdictLine = "The text-only filter would have blocked this legitimate " +
+        "message outright.";
+    } else if (pg.band === tx.band) {
+      verdictLine = "Both systems reached the same band on this message.";
+    } else if (pg.band === "BLOCK" && tx.band === "REVIEW") {
+      verdictLine = "The words alone could not decide it: the text-only filter " +
+        "can only ask for a review, while the link, the domain and the sender " +
+        "history let PhishGuard quarantine it.";
+    } else if (pg.abstained) {
+      verdictLine = "PhishGuard withheld a verdict because its readers " +
+        "disagree; the text-only filter has no such option and committed.";
+    } else {
+      verdictLine = `PhishGuard: ${pg.band}. Text-only filter: ${tx.band}.`;
+    }
+
+    $("compareBody").innerHTML = `
+      <div class="grid two">
+        <div>
+          <div class="meta">${esc(pg.label)}</div>
+          <div style="margin:6px 0"><span class="band ${esc(pg.band)}">${esc(pg.band)}</span>
+            <strong style="margin-left:8px">${pg.score.toFixed(3)}</strong></div>
+          <table class="mini"><tbody>${members}</tbody></table>
+          <div class="hint" style="margin-top:6px">Reader spread
+            ${(pg.member_disagreement || 0).toFixed(2)}${pg.abstained
+              ? " &mdash; above the abstention limit, so this was escalated"
+              : ""}</div>
+        </div>
+        <div>
+          <div class="meta">${esc(tx.label)}</div>
+          <div style="margin:6px 0"><span class="band ${esc(tx.band)}">${esc(tx.band)}</span>
+            <strong style="margin-left:8px">${tx.score.toFixed(3)}</strong></div>
+          <div class="hint">${esc(tx.note || "")}</div>
+        </div>
+      </div>
+      <p style="margin:14px 0 0"><strong>${esc(verdictLine)}</strong></p>`;
+    $("compareCard").hidden = false;
+  }
+
+  // -------------------------------------------------------- PG-HARD tab
+  async function loadBenchmark() {
+    try {
+      const r = await api("/api/v1/benchmark");
+      if (!r.available) {
+        $("benchBody").hidden = true;
+        $("benchStatus").hidden = false;
+        $("benchStatus").textContent = r.hint ||
+          "No benchmark report yet. Run: phishguard hard";
+        return;
+      }
+      $("benchStatus").hidden = true;
+      $("benchBody").hidden = false;
+
+      const pg = r.systems.phishguard;
+      const om = r.ordinary_mail || {};
+      const tiles = [
+        ["Records", r.n_records],
+        ["Silent delivery", pct(pg.silent_delivery_rate)],
+        ["False block", pct(pg.false_block_rate)],
+        ["Acceptable outcome", pct(pg.acceptable_rate)],
+        ["Review load, ordinary mail", pct(om.review_load_rate)],
+      ];
+      const box = $("benchTiles");
+      box.innerHTML = "";
+      tiles.forEach(([k, v]) => {
+        const d = document.createElement("div");
+        d.className = "tile";
+        d.innerHTML = `<div class="k">${esc(k)}</div><div class="v">${esc(String(v))}</div>`;
+        box.appendChild(d);
+      });
+
+      fillRows($("benchSystems"), ["phishguard", "B1_tfidf_logreg", "B0_rule_checklist"]
+        .filter((k) => r.systems[k])
+        .map((k) => {
+          const x = r.systems[k];
+          return [x.label, pct(x.silent_delivery_rate), pct(x.false_block_rate),
+                  pct(x.acceptable_rate), pct(x.review_load_rate)];
+        }));
+
+      fillRows($("benchSignals"), (r.per_defeated_signal || []).map((row) =>
+        [row.defeats, row.cases, row.n, pct(row.pass_rate)]));
+
+      fillRows($("benchCases"), (r.per_case || []).map((row) => [
+        `${row.case_id} — ${row.title}`,
+        row.label === 1 ? "phish" : "legit",
+        row.defeats,
+        row.mean_score.toFixed(3),
+        row.worst_score.toFixed(3),
+        pct(row.pass_rate),
+      ]));
+    } catch (e) {
+      $("benchBody").hidden = true;
+      $("benchStatus").hidden = false;
+      $("benchStatus").textContent = e.message;
+    }
+  }
+
+  function pct(v) {
+    return v === undefined || v === null ? "—" : (v * 100).toFixed(1) + "%";
+  }
+
+  function fillRows(table, rows) {
+    const body = table.querySelector("tbody");
+    body.innerHTML = "";
+    rows.forEach((cells) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = cells.map((c, i) =>
+        `<td${i ? ' style="text-align:right"' : ""}>${esc(String(c))}</td>`).join("");
+      body.appendChild(tr);
+    });
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") doScan();
+  });
+
+  async function doScan() {
+    if (!$("f-body").value.trim() && !$("f-subject").value.trim()) {
+      toast("Enter a subject or body first.", true); return;
+    }
+    const btn = $("scanBtn");
+    btn.disabled = true; btn.textContent = "Assessing…";
+    try {
+      const r = await api("/api/v1/scan", { method: "POST", body: JSON.stringify(buildRequest()) });
+      renderVerdict(r);
+      setConnected(true, "connected");
+      if (r.band === "REVIEW") {
+        toast("Held for review \u2014 a case is waiting in the Review queue.");
+        refreshQueueBadge();
+      }
+    } catch (err) {
+      toast(err.message, true);
+      if (String(err.message).startsWith("401") || String(err.message).startsWith("403")) {
+        setConnected(false, "authentication failed");
+      }
+    } finally {
+      btn.disabled = false; btn.textContent = "Assess message";
+    }
+  }
+
+  function renderVerdict(r) {
+    state.lastDecisionId = r.decision_id;
+    $("verdictEmpty").hidden = true;
+    $("verdictBody").hidden = false;
+
+    const pct = Math.round(r.score * 100);
+    $("scoreVal").textContent = pct + "%";
+    const arc = $("gaugeArc");
+    const circumference = 2 * Math.PI * 46;
+    arc.style.strokeDashoffset = String(circumference * (1 - r.score));
+    arc.setAttribute("stroke", `var(--${r.band.toLowerCase()})`);
+
+    const pill = $("bandPill");
+    pill.className = "band " + r.band;
+    pill.textContent = { ALLOW: "ALLOW — deliver", REVIEW: "REVIEW — send to an analyst",
+                         BLOCK: "BLOCK — quarantine" }[r.band] || r.band;
+
+    $("verdictMeta").innerHTML =
+      `model <code>${esc(r.model_version)}</code> &middot; ${r.latency_ms.toFixed(1)} ms &middot; ` +
+      `behavioural context: <strong>${r.behavioral_available ? "supplied" : "absent"}</strong>` +
+      `<br>decision <code>${esc(r.decision_id)}</code> &middot; defences: ${r.defenses_applied.join(", ")}`;
+
+    const bars = $("memberBars");
+    bars.innerHTML = "";
+    Object.entries(r.member_scores).forEach(([name, value]) => {
+      const row = document.createElement("div");
+      row.className = "bar";
+      row.innerHTML = `<span>${esc(name)}</span>
+        <span class="track"><span class="fill" style="width:${(value * 100).toFixed(1)}%"></span></span>
+        <span class="n">${value.toFixed(3)}</span>`;
+      bars.appendChild(row);
+    });
+
+    // Per-stage timings from the request trace (members, fusion, evidence,
+    // audit write). The same trace id is on the audit record and the log line.
+    const stages = Object.entries(r.stage_ms || {})
+      .filter(([name]) => name !== "scan" && name !== "assess")
+      .sort((a, b) => b[1] - a[1]);
+    $("timingBox").hidden = !stages.length;
+    const tmax = Math.max(1, ...stages.map(([, v]) => v));
+    $("timingBars").innerHTML = stages.map(([name, v]) => `
+      <div class="bar"><span class="mono" style="font-size:11.5px">${esc(name)}</span>
+        <span class="track"><span class="fill" style="width:${((v / tmax) * 100).toFixed(1)}%"></span></span>
+        <span class="n">${v.toFixed(1)} ms</span></div>`).join("");
+    $("traceMeta").innerHTML = r.trace_id ? `trace <code>${esc(r.trace_id)}</code> &mdash; the same id is on the audit record and in the logs` : "";
+
+    const list = $("evidenceList");
+    list.innerHTML = "";
+    if (!r.evidence.length) {
+      list.innerHTML = '<li><span class="stripe"></span><div class="t">No individual signal stood out.</div><span></span></li>';
+    }
+    r.evidence.forEach((e) => {
+      const li = document.createElement("li");
+      li.className = e.direction;
+      li.innerHTML = `<span class="stripe"></span>
+        <div><div class="t">${esc(e.title)}</div>${e.detail ? `<div class="d">${esc(e.detail)}</div>` : ""}</div>
+        <span class="w">${e.weight ? e.weight.toFixed(3) : ""}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  $("feedbackRow").addEventListener("click", async (e) => {
+    const label = e.target.dataset && e.target.dataset.fb;
+    if (!label) return;
+    if (!state.lastDecisionId) { toast("Assess a message first.", true); return; }
+    try {
+      await api("/api/v1/feedback", {
+        method: "POST",
+        body: JSON.stringify({ decision_id: state.lastDecisionId, analyst_label: label,
+                               rationale: "recorded from the analyst console" }),
+      });
+      toast("Feedback recorded. It is stored for review, never used to retrain automatically.");
+    } catch (err) { toast(err.message, true); }
+  });
+
+  // ------------------------------------------------------------ history
+  $("h-refresh").addEventListener("click", loadHistory);
+  async function loadHistory() {
+    const params = new URLSearchParams({ limit: "50" });
+    if ($("h-band").value) params.set("band", $("h-band").value);
+    if ($("h-domain").value.trim()) params.set("sender_domain", $("h-domain").value.trim());
+    const tbody = $("h-table").querySelector("tbody");
+    try {
+      const page = await api("/api/v1/decisions?" + params.toString());
+      $("h-total").textContent = `${page.total} decision(s)`;
+      tbody.innerHTML = "";
+      if (!page.items.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">No decisions recorded yet.</td></tr>';
+        return;
+      }
+      page.items.forEach((d) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td class="mono">${esc(d.created_at.replace("T", " ").slice(0, 19))}</td>
+          <td><span class="pill ${d.band}">${d.band}</span></td>
+          <td class="mono">${d.score.toFixed(3)}</td>
+          <td>${esc(d.sender_domain || "—")}</td>
+          <td class="mono" title="pseudonymised, non-reversible">${esc((d.sender_px || "—").slice(0, 14))}</td>
+          <td>${esc((d.top_evidence || [])[0] || "—")}</td>
+          <td>${d.feedback_label ? esc(d.feedback_label) : "—"}</td>`;
+        tbody.appendChild(tr);
+      });
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">${esc(err.message)}</td></tr>`;
+    }
+  }
+
+  // -------------------------------------------------------------- probe
+  $("probeBtn").addEventListener("click", async () => {
+    const btn = $("probeBtn");
+    btn.disabled = true; btn.textContent = "Attacking…";
+    try {
+      const r = await api("/api/v1/adversarial/probe", {
+        method: "POST",
+        body: JSON.stringify({ message: buildRequest(), budget: Number($("p-budget").value) || 10 }),
+      });
+      $("probeResult").hidden = false;
+      $("p-orig").textContent = r.original_score.toFixed(3);
+      $("p-final").textContent = r.final_score.toFixed(3);
+      $("p-queries").textContent = String(r.queries);
+      $("p-evaded").textContent = r.evaded ? "EVADED" : "held";
+      $("p-evaded").style.color = r.evaded ? "var(--block)" : "var(--allow)";
+      $("p-interp").textContent = r.interpretation;
+      $("p-steps").textContent = r.steps.length
+        ? "Transforms applied: " + r.steps.join(" → ")
+        : "No transform improved the attacker's position.";
+      const traj = $("p-traj");
+      traj.innerHTML = "";
+      (r.trajectory.length ? r.trajectory : [r.original_score]).forEach((v) => {
+        const bar = document.createElement("i");
+        bar.style.height = Math.max(2, v * 46) + "px";
+        traj.appendChild(bar);
+      });
+    } catch (err) { toast(err.message, true); }
+    finally { btn.disabled = false; btn.textContent = "Run probe"; }
+  });
+
+  // -------------------------------------------------------------- model
+  async function loadModel() {
+    try {
+      const [info, stats] = await Promise.all([api("/api/v1/model"), api("/api/v1/stats")]);
+      $("modelInfo").innerHTML = `
+        <table>
+          <tr><th>Version</th><td class="mono">${esc(info.model_version)}</td></tr>
+          <tr><th>Trained</th><td class="mono">${esc(info.trained_at || "—")}</td></tr>
+          <tr><th>Members</th><td>${info.members.map(esc).join(", ")}</td></tr>
+          <tr><th>Feature families</th><td>${info.feature_families.map(esc).join(", ")}</td></tr>
+          <tr><th>Calibration</th><td>${esc(info.calibration_method)}</td></tr>
+          <tr><th>Active defences</th><td class="mono">${info.active_defense_ids.map(esc).join(", ")}</td></tr>
+          <tr><th>Thresholds</th><td>REVIEW ≥ ${info.thresholds.review} &middot; BLOCK ≥ ${info.thresholds.block}${info.threshold_source ? `<br><span style="color:var(--text-dim);font-size:12px">${esc(info.threshold_source)}</span>` : ""}</td></tr>
+        </table>`;
+
+      const tiles = $("statTiles");
+      tiles.innerHTML = "";
+      const cells = [
+        ["Decisions", stats.decisions],
+        ["Blocked", (stats.bands && stats.bands.BLOCK) || 0],
+        ["To review", (stats.bands && stats.bands.REVIEW) || 0],
+        ["Mean latency", (stats.mean_latency_ms || 0).toFixed(1) + " ms"],
+        ["Analyst disagreements", stats.analyst_disagreements || 0],
+      ];
+      cells.forEach(([k, v]) => {
+        const d = document.createElement("div");
+        d.className = "tile";
+        d.innerHTML = `<div class="k">${esc(k)}</div><div class="v">${esc(String(v))}</div>`;
+        tiles.appendChild(d);
+      });
+
+      const dist = $("scoreDist");
+      dist.innerHTML = "";
+      const maxCount = Math.max(1, ...(stats.score_distribution || []).map((b) => b.count));
+      (stats.score_distribution || []).forEach((b) => {
+        const bar = document.createElement("i");
+        bar.style.height = Math.max(2, (b.count / maxCount) * 60) + "px";
+        bar.title = `${b.lower}–${b.upper}: ${b.count}`;
+        dist.appendChild(bar);
+      });
+
+      const tbody = $("taxTable").querySelector("tbody");
+      tbody.innerHTML = "";
+      (info.attack_taxonomy || []).forEach((f) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td class="mono">${esc(f.id)}</td><td>${esc(f.name)}</td>
+          <td>${esc(f.capability)}</td><td>${esc(f.attacker_cost)}</td>
+          <td class="mono">${(f.countered_by || []).map(esc).join(", ")}</td>`;
+        tbody.appendChild(tr);
+      });
+      loadDrift();  // not awaited: the first call calibrates its thresholds
+    } catch (err) { toast(err.message, true); }
+  }
+
+  // -------------------------------------------------------------- drift
+  // Status maps onto the existing band pills, so "significant" reads with the
+  // same weight as BLOCK; the word is always shown, never colour alone.
+  const DRIFT_PILL = { stable: "ALLOW", moderate: "REVIEW", significant: "BLOCK" };
+
+  async function loadDrift() {
+    const out = $("driftOut");
+    const btn = $("driftBtn");
+    btn.disabled = true; btn.textContent = "Checking…";
+    try {
+      const hours = $("driftWindow").value;
+      const r = await api("/api/v1/drift?window_hours=" + encodeURIComponent(hours));
+      if (!r.available) {
+        out.innerHTML = `<div class="empty">${esc(r.reason || "Drift is not available for this window.")}</div>`;
+        return;
+      }
+      const th = r.thresholds || {};
+      const w = r.worst || {};
+      const rows = (r.quantities || []).map((q) => `
+        <tr><td>${esc(q.quantity)}</td>
+          <td class="mono">${Number(q.psi).toFixed(3)}</td>
+          <td><span class="pill ${DRIFT_PILL[q.severity] || ""}">${esc(q.severity)}</span></td>
+          <td class="mono">${Number(q.reference_mean).toFixed(3)}</td>
+          <td class="mono">${Number(q.live_mean).toFixed(3)}</td></tr>`).join("");
+      const shares = r.live_band_shares
+        ? ` &middot; live bands: ALLOW ${(100 * r.live_band_shares.ALLOW).toFixed(1)}%, REVIEW ${(100 * r.live_band_shares.REVIEW).toFixed(1)}%, BLOCK ${(100 * r.live_band_shares.BLOCK).toFixed(1)}%`
+        : "";
+      out.innerHTML = `
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <span class="pill ${DRIFT_PILL[r.status] || ""}" style="font-size:13px;padding:4px 12px">${esc(r.status)}</span>
+          <span>Largest shift: <b>${esc(w.quantity || "—")}</b>, PSI ${w.psi != null ? Number(w.psi).toFixed(3) : "—"}
+            (watch ≥ ${Number(th.moderate).toFixed(2)}, act ≥ ${Number(th.significant).toFixed(2)})</span>
+        </div>
+        <p style="margin:10px 0 4px">${esc(r.advice || "").replace(/`([^`]+)`/g, '<code class="mono">$1</code>')}</p>
+        ${r.hint ? `<p class="meta" style="margin:0 0 6px">${esc(r.hint)}</p>` : ""}
+        <p class="meta" style="margin:0 0 12px">${esc(r.n_live)} decisions in the window against a reference of
+          ${esc(r.n_reference)} legitimate messages${shares}. Thresholds are calibrated on stable,
+          campaign-structured windows of the same size, not the textbook 0.10 / 0.25.</p>
+        <div class="scroll"><table>
+          <thead><tr><th>Quantity</th><th>PSI</th><th>Status</th><th>Reference mean</th><th>Live mean</th></tr></thead>
+          <tbody>${rows}</tbody></table></div>`;
+    } catch (err) {
+      out.innerHTML = `<div class="empty">${esc(err.message)}</div>`;
+    } finally { btn.disabled = false; btn.textContent = "Check drift"; }
+  }
+  $("driftBtn").addEventListener("click", loadDrift);
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  if (state.key) connect();
+  else api("/healthz").then((h) => setConnected(false, h.model_loaded
+    ? "enter an API key" : "no model loaded")).catch(() => setConnected(false, "API unreachable"));
+})();
+</script>
+</body>
+</html>
